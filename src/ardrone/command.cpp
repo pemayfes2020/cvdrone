@@ -296,6 +296,20 @@ void ARDrone::move3D(double vx, double vy, double vz, double vr)
     }
 }
 
+void ARDrone::keepPosition(double x, double y, double z) {
+	//îÚçséû
+	if (!onGround()) {
+		float Kp;
+		float v[3];
+		//Pêßå‰
+		if (x) v[0] = Kp * (x - navdata.pos_x);
+		if (y) v[1] = Kp * (y - navdata.pos_y);
+		if (z) v[2] = Kp * (z - navdata.pos_z);
+
+		move3D(v[0], v[1], v[2], 0);
+	}
+}
+
 // --------------------------------------------------------------------------
 //! @brief   Change the camera channel.
 //! @param   channel Camera channel 

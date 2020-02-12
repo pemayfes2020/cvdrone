@@ -318,6 +318,20 @@ double ARDrone::getVelocity(double *vx, double *vy, double *vz)
     if (vy) *vy = velocity_y;
     if (vz) *vz = velocity_z;
 
+	//‘¬“x‚ÌÏ•ª‚ÅˆÊ’u‚ğ‹‚ß‚é
+	if (navdata.time_prev == navdata.time_now) {
+		navdata.time_prev = std::chrono::system_clock::now();
+	}
+	else {
+		navdata.time_prev = navdata.time_now;
+	}
+	navdata.time_now = std::chrono::system_clock::now();
+	double diff_time = std::chrono::duration_cast<std::chrono::milliseconds>(navdata.time_now - navdata.time_prev).count();
+	
+	navdata.pos_x += velocity_x * diff_time;
+	navdata.pos_y += velocity_y * diff_time;
+	navdata.pos_z += velocity_z * diff_time;
+
     // Velocity [m/s]
     double velocity = sqrt(velocity_x*velocity_x + velocity_y*velocity_y + velocity_z*velocity_z);
     return velocity;

@@ -49,6 +49,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <math.h>
+#include <chrono>
 
 // OpenCV 1.0
 //#include <opencv/cv.h>
@@ -367,6 +368,10 @@ struct ARDRONE_NAVDATA {
     unsigned int ardrone_state;
     unsigned int sequence;
     unsigned int vision_defined;
+
+	//à íuÇãÅÇﬂÇÈóp
+	std::chrono::system_clock::time_point time_now, time_prev;
+	double pos_x, pos_y, pos_z;
 
     // Demo
     struct NAVDATA_DEMO {
@@ -1065,6 +1070,9 @@ public:
     virtual double getAltitude(void);   // Altitude    [m]
     virtual double getVelocity(double *vx = NULL, double *vy = NULL, double *vz = NULL); // Velocity [m/s]
     virtual int    getPosition(double *latitude = NULL, double *longitude = NULL, double *elevation = NULL); // GPS (only for AR.Drone 2.0)
+																											 
+	//à íuÇãÅÇﬂÇÈä÷êî
+	virtual void   mygetPosition(double *x, double *y, double *z);
 
     // Battery charge [%]
     virtual int getBatteryPercentage(void);
@@ -1077,6 +1085,7 @@ public:
     // Move with velocity [m/s]
     virtual void move(double vx, double vy, double vr);
     virtual void move3D(double vx, double vy, double vz, double vr);
+	virtual void keepPosition(double x, double y, double z);
 
     // Change camera channel
     virtual void setCamera(int channel);

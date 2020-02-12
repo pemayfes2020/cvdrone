@@ -75,6 +75,9 @@ int main(int argc, char *argv[])
 	tmpl = cv::imread("template_circle.png", 0); //テンプレートをグレースケールで読み込む
 	////////////////////////////
 
+	//目標地点を格納
+	double target_x, target_y, target_z;
+
 	while (1) {
 		// Key input
 		int key = cv::waitKey(33);
@@ -91,6 +94,9 @@ int main(int argc, char *argv[])
 
 		// Move
 		double vx = 0.0, vy = 0.0, vz = 0.0, vr = 0.0;
+		double vx_now, vy_now;
+		ardrone.getVelocity(&vx_now, &vy_now, 0);	
+		
 		switch (key) {
 		case CV_VK_UP:		vx = 1.0; break;
 		case CV_VK_DOWN:	vx = -1.0; break;
@@ -101,7 +107,6 @@ int main(int argc, char *argv[])
 		case 'q':	vz = 1.0; break;
 		case 'a':	vz = -1.0; break;
 		case 'b':
-			double vx_now, vy_now;
 			double const init_alt = ardrone.getAltitude();
 
 			std::cout << "altitude = " << init_alt << std::endl;
@@ -122,7 +127,8 @@ int main(int argc, char *argv[])
 			break;
 
 		default:
-
+			
+			ardrone.keepPosition(target_x, target_y, target_z);
 		}
 		ardrone.move3D(vx, vy, vz, vr);
 
