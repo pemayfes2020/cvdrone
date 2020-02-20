@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
 		// Move
 		double vx = 0.0, vy = 0.0, vz = 0.0, vr = 0.0;
-		double vx_now, vy_now;
+		double vx_now, vy_now, x_now, y_now, z_now;
 		ardrone.getVelocity(&vx_now, &vy_now, 0);	
 		
 		switch (key) {
@@ -127,8 +127,9 @@ int main(int argc, char *argv[])
 			break;
 
 		default:
-			
-			ardrone.keepPosition(target_x, target_y, target_z);
+			ardrone.keepPosition(target_x, target_y, target_z, &vx, &vy, &vz);
+			ardrone.mygetPosition(&x_now, &y_now, &z_now);
+			std::cout << "\r" << "(x, y, z) = (" << x_now << y_now << z_now << ", altitude = " << ardrone.getAltitude();
 		}
 		ardrone.move3D(vx, vy, vz, vr);
 

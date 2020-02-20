@@ -1,9 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\build",
     "\\build\\vs2015"
   ],
-  "SelectedNode": "\\build\\vs2015\\test.sln",
+  "SelectedNode": "\\build",
   "PreviewInSolutionExplorer": false
 }

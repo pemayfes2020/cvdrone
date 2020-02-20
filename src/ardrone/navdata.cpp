@@ -364,7 +364,11 @@ int ARDrone::getPosition(double *latitude, double *longitude, double *elevation)
 
     return available;
 }
-
+void ARDrone::mygetPosition(double *x, double *y, double *z) {
+	if (x) *x = navdata.pos_x;
+	if (y) *y = navdata.pos_y;
+	if (z) *z = navdata.pos_z;
+}
 // --------------------------------------------------------------------------
 //! @brief   Get current battery percentage of AR.Drone.
 //! @return  Battery percentage [%]

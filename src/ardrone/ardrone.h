@@ -1085,7 +1085,7 @@ public:
     // Move with velocity [m/s]
     virtual void move(double vx, double vy, double vr);
     virtual void move3D(double vx, double vy, double vz, double vr);
-	virtual void keepPosition(double x, double y, double z);
+	virtual void keepPosition(double x, double y, double z, double *vx, double *vy, double *vz);
 
     // Change camera channel
     virtual void setCamera(int channel);
