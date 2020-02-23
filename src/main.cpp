@@ -44,10 +44,7 @@ int main(int argc, char *argv[])
 	std::cout << "*                                     *" << std::endl;
 	std::cout << "***************************************" << std::endl;
 
-
-	////////////////////////////2020/02/13
-	std::pair<cv::Mat, std::vector<cv::Vec3f> > dcResult;
-	////////////////////////////
+	double target_x, target_y, target_z;
 
 	while (1) {
 		// Key input
@@ -99,12 +96,9 @@ int main(int argc, char *argv[])
 		static int mode = 0;
 		if (key == 'c') ardrone.setCamera(++mode % 4);
 
-		// Display the image
-		dcResult = ardrone.detectCircle(image);
-		cv::imshow("camera", dcResult.first);
 
 		//標準出力で中心座標、半径を確認
-		std::vector<cv::Vec3f> circles = dcResult.second;
+		std::vector<cv::Vec3f> circles = ardrone.detectCircle(image, target_x, target_y, target_z);
 
 		if(circles.size()){
 			std::cout << std::endl;
