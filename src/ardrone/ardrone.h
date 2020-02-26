@@ -49,7 +49,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <math.h>
-#include <chrono>
+#include <time.h>
 
 // OpenCV 1.0
 //#include <opencv/cv.h>
@@ -370,7 +370,7 @@ struct ARDRONE_NAVDATA {
     unsigned int vision_defined;
 
 	//à íuÇãÅÇﬂÇÈóp
-	std::chrono::system_clock::time_point time_now, time_prev;
+	clock_t time_now, time_prev;
 	double pos_x, pos_y, pos_z;
 
     // Demo

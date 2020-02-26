@@ -304,7 +304,14 @@ double ARDrone::getAltitude(void)
 //! @return Velocity [m/s]
 // --------------------------------------------------------------------------
 double ARDrone::getVelocity(double *vx, double *vy, double *vz)
-{
+{	//速度の積分で位置を求める
+	if (navdata.time_prev == navdata.time_now) {
+		navdata.time_prev = clock();
+	}
+	else {
+		navdata.time_prev = navdata.time_now;
+	}
+
     // Get the data
     if (mutexNavdata) pthread_mutex_lock(mutexNavdata);
     double velocity_x =  navdata.demo.vx * 0.001;
@@ -318,15 +325,9 @@ double ARDrone::getVelocity(double *vx, double *vy, double *vz)
     if (vy) *vy = velocity_y;
     if (vz) *vz = velocity_z;
 
-	//速度の積分で位置を求める
-	if (navdata.time_prev == navdata.time_now) {
-		navdata.time_prev = std::chrono::system_clock::now();
-	}
-	else {
-		navdata.time_prev = navdata.time_now;
-	}
-	navdata.time_now = std::chrono::system_clock::now();
-	double diff_time = std::chrono::duration_cast<std::chrono::milliseconds>(navdata.time_now - navdata.time_prev).count();
+	
+	navdata.time_now = clock();
+	double diff_time = (double)(navdata.time_now - navdata.time_prev)/CLOCKS_PER_SEC;
 	std::cout << "; diff_time = " << diff_time;
 
 	navdata.pos_x += velocity_x * diff_time;
