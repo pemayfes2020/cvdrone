@@ -106,25 +106,6 @@ int main(int argc, char *argv[])
 		case 'l':	vy = -1.0; break;
 		case 'q':	vz = 1.0; break;
 		case 'a':	vz = -1.0; break;
-		case 'b':
-			double const init_alt = ardrone.getAltitude();
-
-			std::cout << "altitude = " << init_alt << std::endl;
-			while (ardrone.getAltitude() < init_alt + 0.3) {
-				ardrone.getVelocity(&vx_now, &vy_now, 0);
-				ardrone.move3D(-vx_now, -vy_now, 1.0, 0.0);
-				std::cout << "\r" << "altitude = " << ardrone.getAltitude();
-				cv::imshow("camera", temp_match(image));
-			}
-			while (ardrone.getAltitude() > init_alt) {
-				ardrone.getVelocity(&vx_now, &vy_now, 0);
-				ardrone.move3D(-vx_now, -vy_now, -1.0, 0.0);
-				std::cout << "\r" << "altitude = " << ardrone.getAltitude();
-				cv::imshow("camera", temp_match(image));
-			}
-			ardrone.move3D(0.0, 0.0, 1.0, 0.0);
-			std::cout << "\r" << "command b end.            ";
-			break;
 
 		default:
 			ardrone.keepPosition(target_x, target_y, target_z, &vx, &vy, &vz);
