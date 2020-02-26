@@ -327,7 +327,8 @@ double ARDrone::getVelocity(double *vx, double *vy, double *vz)
 	}
 	navdata.time_now = std::chrono::system_clock::now();
 	double diff_time = std::chrono::duration_cast<std::chrono::milliseconds>(navdata.time_now - navdata.time_prev).count();
-	
+	std::cout << "; diff_time = " << diff_time;
+
 	navdata.pos_x += velocity_x * diff_time;
 	navdata.pos_y += velocity_y * diff_time;
 	navdata.pos_z += velocity_z * diff_time;
