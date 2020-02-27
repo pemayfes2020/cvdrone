@@ -109,8 +109,8 @@ int main(int argc, char *argv[])
 		if(circles.size()){
 			std::cout << std::endl;
 			for(size_t i = 0;i < circles.size();i++){
-				std::cout << "x = " << cvRound(circles[i][0]) << " y = " << cvRound(circles[i][1]) << std::endl;
-				std::cout << "r = " << cvRound(circles[i][2]) << std::endl;
+				std::cout << "\rx = " << cvRound(circles[i][0]) << " y = " << cvRound(circles[i][1]);
+				std::cout << "\rr = " << cvRound(circles[i][2]) << std::endl;
 			}
 			std::cout << std::endl;
 		}
