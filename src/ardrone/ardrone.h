@@ -1072,7 +1072,8 @@ public:
     virtual int    getPosition(double *latitude = NULL, double *longitude = NULL, double *elevation = NULL); // GPS (only for AR.Drone 2.0)
 																											 
 	//ˆÊ’u‚ğ‹‚ß‚éŠÖ”
-	virtual void   mygetPosition(double *x, double *y, double *z);
+	virtual void mygetPosition(double *x, double *y, double *z);
+	virtual void resetPosition();
 
     // Battery charge [%]
     virtual int getBatteryPercentage(void);

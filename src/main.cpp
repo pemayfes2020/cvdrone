@@ -74,11 +74,12 @@ int main(int argc, char *argv[])
 		case 'l':	vy = -1.0; break;
 		case 'q':	vz = 1.0; break;
 		case 'a':	vz = -1.0; break;
+		case 'r':	ardrone.resetPosition();
 
 		default:
 			ardrone.keepPosition(target_x, target_y, target_z, &vx, &vy, &vz);
 			ardrone.mygetPosition(&x_now, &y_now, &z_now);
-			std::cout << "\r" << "(x, y, z) = (" << x_now << y_now << z_now << ", altitude = " << ardrone.getAltitude();
+			std::cout << "\r" << "(x, y, z) = (" << x_now << ", " << y_now << ", " << z_now << "), altitude = " << ardrone.getAltitude();
 		}
 		ardrone.move3D(vx, vy, vz, vr);
 
