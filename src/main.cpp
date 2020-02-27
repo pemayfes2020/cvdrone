@@ -65,11 +65,11 @@ int main(int argc, char *argv[])
 		cv::Mat image = ardrone.getImage();
 
 		//飛ぶと危ないのでコメントアウトしてる
-		// Take off / Landing 
-		// if (key == ' ') {
-		// 	if (ardrone.onGround()) ardrone.takeoff();
-		// 	else                    ardrone.landing();
-		// }
+		//Take off / Landing 
+		if (key == ' ') {
+			if (ardrone.onGround()) ardrone.takeoff();
+			else                    ardrone.landing();
+		}
 
 
 		//phaseごとに分ける
