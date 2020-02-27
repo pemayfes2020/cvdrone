@@ -1042,7 +1042,9 @@ public:
     virtual ~ARDrone();
 
     //byYutarotaro
-    virtual std::pair<cv::Mat, std::vector<cv::Vec3f>> detectCircle(cv::Mat image);
+    virtual std::vector<cv::Vec3f> detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z);
+
+	virtual std::vector<cv::Vec3f> color_tracking(cv::Mat image, double &target_x, double &target_y, double &target_z);
 
     // Initialize
     virtual int open(const char *ardrone_addr = ARDRONE_DEFAULT_ADDR);

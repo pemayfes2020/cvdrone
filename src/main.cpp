@@ -5,6 +5,14 @@
 // Description  : This is the entry point of the program.
 // Return value : SUCCESS:0  ERROR:-1
 // --------------------------------------------------------------------------
+const int START = 0;
+const int FIND_OBJECT = 1;
+const int GO_TOWARDS = 2;
+const int ARRIVED = 3;
+
+
+//中心座標確認用
+void drawCirlcles(std::vector<cv::Vec3f> circles);
 
 
 
@@ -19,15 +27,9 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	// Battery
-	std::cout << "Battery = " << ardrone.getBatteryPercentage() << "[%]" << std::endl;
-
 	// Instructions
 	std::cout << "***************************************" << std::endl;
 	std::cout << "*       CV Drone sample program       *" << std::endl;
-	std::cout << "*           - How to play -           *" << std::endl;
-	std::cout << "***************************************" << std::endl;
-	std::cout << "*                                     *" << std::endl;
 	std::cout << "* - Controls -                        *" << std::endl;
 	std::cout << "*    'Space' -- Takeoff/Landing       *" << std::endl;
 	std::cout << "*    'Up'    -- Move forward          *" << std::endl;
@@ -37,17 +39,22 @@ int main(int argc, char *argv[])
 	std::cout << "*    'Q'     -- Move upward           *" << std::endl;
 	std::cout << "*    'A'     -- Move downward         *" << std::endl;
 	std::cout << "*    'B'     -- auto-up-and-down      *" << std::endl;
-	std::cout << "*                                     *" << std::endl;
 	std::cout << "* - Others -                          *" << std::endl;
 	std::cout << "*    'C'     -- Change camera         *" << std::endl;
 	std::cout << "*    'Esc'   -- Exit                  *" << std::endl;
-	std::cout << "*                                     *" << std::endl;
 	std::cout << "***************************************" << std::endl;
 
+	// Battery
+	std::cout << "Battery = " << ardrone.getBatteryPercentage() << "[%]" << std::endl;
 
-	////////////////////////////2020/02/13
-	std::pair<cv::Mat, std::vector<cv::Vec3f> > dcResult;
-	////////////////////////////
+
+	double target_x, target_y, target_z;
+	int phase = START;
+
+	double pre_alt = 0;
+
+	int LOW_HUE = 88;           //hueの下限
+	int UP_HUE = 108;              //hueの上限
 
 	while (1) {
 		// Key input
@@ -57,11 +64,40 @@ int main(int argc, char *argv[])
 		// Get an image
 		cv::Mat image = ardrone.getImage();
 
-		// Take off / Landing 
+		//飛ぶと危ないのでコメントアウトしてる
+		//Take off / Landing 
 		if (key == ' ') {
 			if (ardrone.onGround()) ardrone.takeoff();
 			else                    ardrone.landing();
 		}
+
+
+		//phaseごとに分ける
+
+		// switch (phase){
+		// 	case START:{
+		// 	    if(abs(pre_alt - ardrone.getAltitude()) < 0.5 && pre_alt){
+		// 			phase = 1;//FIND_OBJECTへ
+		// 		}
+		// 		pre_alt = ardrone.getAltitude();
+		// 		break;
+		// 	}
+		// 	case FIND_OBJECT:{
+		// 		//その場で回転
+		// 		vr = 1.0;
+
+		// 		break;
+		// 	}
+		// 	case GO_TOWARDS:{
+		// 		break;
+		// 	}
+		// 	case ARRIVED:{
+		// 		break;
+		// 	}
+		// 	default:{
+		// 		break;
+		// 	}
+		// }
 
 		// Move
 		double vx = 0.0, vy = 0.0, vz = 0.0, vr = 0.0;
@@ -99,26 +135,28 @@ int main(int argc, char *argv[])
 		static int mode = 0;
 		if (key == 'c') ardrone.setCamera(++mode % 4);
 
-		// Display the image
-		dcResult = ardrone.detectCircle(image);
-		cv::imshow("camera", dcResult.first);
 
 		//標準出力で中心座標、半径を確認
+<<<<<<< HEAD
+		//drawCirlcles(ardrone.color_tracking(image, target_x, target_y, target_z));
+	    drawCirlcles(ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE));
+=======
 		std::vector<cv::Vec3f> circles = dcResult.second;
 
 		if(circles.size()){
 			std::cout << std::endl;
 			for(size_t i = 0;i < circles.size();i++){
-				std::cout << "x = " << cvRound(circles[i][0]) << " y = " << cvRound(circles[i][1]) << std::endl;
-				std::cout << "r = " << cvRound(circles[i][2]) << std::endl;
+				std::cout << "\rx = " << cvRound(circles[i][0]) << " y = " << cvRound(circles[i][1]);
+				std::cout << "\rr = " << cvRound(circles[i][2]) << std::endl;
 			}
 			std::cout << std::endl;
 		}
 
 
 
+>>>>>>> origin/master
 		
-		if (ardrone.getBatteryPercentage() < 15) {
+		if (ardrone.getBatteryPercentage() < 10) {
 			std::cout << "Battery low !" << std::endl;
 			ardrone.landing();
 			break;
@@ -129,4 +167,16 @@ int main(int argc, char *argv[])
 	ardrone.close();
 
 	return 0;
+}
+
+//検出した円の中心座標、半径を標準出力で確認する用
+void drawCirlcles(std::vector<cv::Vec3f> circles){
+	if(circles.size()){
+			std::cout << std::endl;
+			for(size_t i = 0;i < circles.size();i++){
+				std::cout << "x = " << cvRound(circles[i][0]) << " y = " << cvRound(circles[i][1]) << std::endl;
+				std::cout << "r = " << cvRound(circles[i][2]) << std::endl;
+			}
+			std::cout << std::endl;
+		}
 }

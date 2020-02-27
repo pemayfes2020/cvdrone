@@ -13,23 +13,45 @@
 //! @retval  1 Success
 //! @retval  0 Failure
 // --------------------------------------------------------------------------
-using namespace cv;
-using namespace std;
 
-#define  LOW_SATURATION 65              //saturation（彩度）の下限
+#define  LOW_HUE        85            //hueの下限
+#define  UP_HUE         110              //hueの上限
+#define  LOW_SATURATION 60              //saturation（彩度）の下限
 #define  LOW_VALUE      50              //value（明度）の下限
 
-std::vector<Vec3f> ARDrone::detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z, int LOW_HUE, int UP_HUE){
-    //ref = http://opencv.jp/opencv-2svn/cpp/feature_detection.html
-	 //http://carnation.is.konan-u.ac.jp/prezemi-1round/colorextraction.htm
+std::vector<cv::Vec3f> ARDrone::color_tracking(cv::Mat image, double &target_x, double &target_y, double &target_z){
+   if(1){
+    // cv::Mat output;
+    // cv::inRange(image, output, );
+    //std::vector<cv::Vec3f> c;
+	// return c;
+
+    // int hueMin = 0;
+    // int hueMax = 33;
+    // int saturation = 10;
+    // int brightness = 10;
+
+    //cv::Mat hsv;
+    //cv::Mat result;
+    // // カラー画像をHSV画像に変換
+    // cv::cvtColor(image, hsb, CV_RGB2HSV, 3);
+    // // inRangeによるフィルタ
+    // cv::inRange(hsb, cv::Scalar(hueMin, saturation, brightness, 0) , cv::Scalar(hueMax, 255, 255, 0), result);
+    
+    //http://koshinran.hateblo.jp/entry/2017/10/03/193925色抽出
+
+    // auto lower = cv::Scalar(0, 0, 200);
+    // auto upper = cv::Scalar(50, 50, 255);
+
+    // cv::inRange(image, lower, upper, result);
+   }
+
+    //http://carnation.is.konan-u.ac.jp/prezemi-1round/colorextraction.htm
     cv::Mat hsv, frame, hue, hue1, hue2, saturation, value, hue_saturation, image_black_white;  
 
-    std::vector<cv::Vec3f> circles;
-
-	Mat img = image.clone();
     cv::cvtColor(image, hsv, CV_BGR2HSV);
-    //cv::GaussianBlur(img, img, cv::Size(9,9), 2, 2);
-	//cv::bilateralFilter(img, img, 10, 100, 10, cv::BORDER_DEFAULT);
+    cv::GaussianBlur(image, image, cv::Size(9,9), 2, 2);
+
 
     std::vector<cv::Mat> singlechannels;//Matクラスのベクトルとしてsinglechannelsを定義
 
@@ -47,44 +69,26 @@ std::vector<Vec3f> ARDrone::detectCircle(cv::Mat image, double &target_x, double
     
     //cv::Canny(image_black_white,image_black_white,125, 125);
 
+    std::vector<cv::Vec3f> circles;
 
-	vector<vector<Point> > contours;
-    vector<Vec4i> hierarchy;
+    cv::HoughCircles(image_black_white, circles, CV_HOUGH_GRADIENT, 2, image_black_white.rows / 4.0, 200, 100, 0, 80);
 
-    findContours(image_black_white, contours, hierarchy,
-        CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
+    std::vector<cv::Vec3f> ret_circle;
 
-	vector<vector<Point> > contours_poly( contours.size() );
-	vector<Rect> boundRect( contours.size() );
-	vector<Point2f> center( contours.size() );
- 	vector<float> radius( contours.size() );
+    for(size_t i = 0;i < circles.size();i++){
+        cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+        int radious = cvRound(circles[i][2]);
 
-	for( int i = 0; i < contours.size(); i++ ){
-		approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
-        boundRect[i] = boundingRect( Mat(contours_poly[i]) );
-        minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
-		double L = arcLength(contours[i], true);
-		double S = contourArea(contours[i]);
-		double circle_label = 4 * M_PI * S / (L * L);
-	    if(circle_label > 0.55 && radius[i] > 5.0)circle(image, center[i], (int)radius[i], cv::Scalar(0, 0, 255), 2, 8, 0 );
-    }
+        cv::circle(image, center, 3, cv::Scalar(0, 255, 0), -1, 8, 0);
+        cv::circle(image, center, radious, cv::Scalar(0, 0, 255), 3, 8, 0);
+        ret_circle.push_back(circles[i]);   
+	}
 
-
-    // cv::circle(image, center, radius, cv::Scalar(0, 0, 255), 2, CV_AA);
-
-    // トップレベルにあるすべての輪郭を横断し，
-    // 各連結成分をランダムな色で描きます．
-    // int idx = 0;
-    // for( ; idx >= 0; idx = hierarchy[idx][0] )
-    // {
-    //     Scalar color(255, 0, 0);
-    //     drawContours(image, contours, idx, color, CV_FILLED, 8, hierarchy );
-    // }
-
-	cv::namedWindow("image_black_white");
+    cv::namedWindow("image_black_white");
     cv::imshow("image_black_white",image_black_white);
 
     cv::namedWindow("image");
     cv::imshow("image",image);
-	return circles;
+
+    return ret_circle;
 }
