@@ -16,53 +16,75 @@
 using namespace cv;
 using namespace std;
 
+#define  LOW_SATURATION 65              //saturation（彩度）の下限
+#define  LOW_VALUE      50              //value（明度）の下限
 
-vector<Vec3f> ARDrone::detectCircle(Mat image, double &target_x, double &target_y, double &target_z){
+std::vector<Vec3f> ARDrone::detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z, int LOW_HUE, int UP_HUE){
     //ref = http://opencv.jp/opencv-2svn/cpp/feature_detection.html
+	 //http://carnation.is.konan-u.ac.jp/prezemi-1round/colorextraction.htm
+    cv::Mat hsv, frame, hue, hue1, hue2, saturation, value, hue_saturation, image_black_white;  
 
-    Mat gray;
-    cvtColor(image, gray, COLOR_BGR2GRAY);
+    std::vector<cv::Vec3f> circles;
 
-    GaussianBlur(gray, gray, Size(9,9), 2, 2);
-    vector<Vec3f> circles;
-    HoughCircles(gray, circles, CV_HOUGH_GRADIENT, 2, gray.rows / 32, 200, 100);
+	Mat img = image.clone();
+    cv::cvtColor(image, hsv, CV_BGR2HSV);
+    //cv::GaussianBlur(img, img, cv::Size(9,9), 2, 2);
+	//cv::bilateralFilter(img, img, 10, 100, 10, cv::BORDER_DEFAULT);
 
-	/************************************************************************* 
-	circlesはrow x ３の2次元vector (float)
-	circles[row][0]: row番目の円のx座標
-    circles[row][1]: row番目の円のy座標
-	circles[row][2]: row番目の円の半径 
+    std::vector<cv::Mat> singlechannels;//Matクラスのベクトルとしてsinglechannelsを定義
 
-	!!openCVにおいて、画素値の順番は<B, G, R>!!	
-	**************************************************************************/
+    cv::split(hsv, singlechannels);//hsvをsinglechannelsに分解([0]:h, [1]:s,[2]:v)
 
-	vector<Vec3f> ret_circle;
+    //それぞれのチャンネルことに閾値を設定して二値化
+    cv::threshold(singlechannels[0], hue1, LOW_HUE, 255, CV_THRESH_BINARY);                 // singlechannels[0]をLOW_HUEを閾値処理して、LOW_HUE以上の部分が255,それ以下の部分が0になるように、hue1に格納する。
+    cv::threshold(singlechannels[0], hue2, UP_HUE, 255, CV_THRESH_BINARY_INV);              // singlechannels[0]をUP_HUEを閾値処理して、UP_HUE以上の部分が0,それ以下の部分が255になるように、hue2に格納する。
+    cv::threshold(singlechannels[1], saturation, LOW_SATURATION, 255, CV_THRESH_BINARY);    //彩度LOW_SATURATION以上
+    cv::threshold(singlechannels[2], value, LOW_VALUE, 255, CV_THRESH_BINARY);              //明度LOW_VALUE以上
+    //条件を満たした領域をoutに設定
+    cv::bitwise_and(hue1, hue2, hue);
+    cv::bitwise_and(hue, saturation, hue_saturation);                                       // hueとsaturationのbitごとのandをとる→hue_saturation
+    cv::bitwise_and(hue_saturation, value, image_black_white);                              // hue_saturationとvalueのbitごとのandをとる→image_black_white
+    
+    //cv::Canny(image_black_white,image_black_white,125, 125);
 
-//	Vec3f ptImg = image;
 
-    for(size_t i = 0;i < circles.size();i++){
-        Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-        int radious = cvRound(circles[i][2]);
+	vector<vector<Point> > contours;
+    vector<Vec4i> hierarchy;
 
-     	//Vec3f* ptr = image.ptr<Vec3f>(center.x);  これできれば早いらしい
+    findContours(image_black_white, contours, hierarchy,
+        CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE );
 
-		//for(int j = -1;j < 2;j++){
-		//	for(int k = -1;k < 2;k++){
-   		//		flag = (flag || );	
-		//	}
-		//}
-		//if(ptImg(center)[2] > 50 && ptImg(center)[1] < 30 && ptImg(center)[0] < 30){
-   			 //cout << ptImg(center) << endl;
-		//if(flag){	
-		 //	cout << ptImg(center)<< endl;  
-     		circle(image, center, 3, Scalar(0, 255, 0), -1, 8, 0);
-   		    circle(image, center, radious, Scalar(0, 0, 255), 3, 8, 0);
-	    	ret_circle.push_back(circles[i]);    	
-		//}
-	}
+	vector<vector<Point> > contours_poly( contours.size() );
+	vector<Rect> boundRect( contours.size() );
+	vector<Point2f> center( contours.size() );
+ 	vector<float> radius( contours.size() );
 
-	imshow("camera", image);	 
-				
+	for( int i = 0; i < contours.size(); i++ ){
+		approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
+        boundRect[i] = boundingRect( Mat(contours_poly[i]) );
+        minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
+		double L = arcLength(contours[i], true);
+		double S = contourArea(contours[i]);
+		double circle_label = 4 * M_PI * S / (L * L);
+	    if(circle_label > 0.55 && radius[i] > 5.0)circle(image, center[i], (int)radius[i], cv::Scalar(0, 0, 255), 2, 8, 0 );
+    }
 
-    return ret_circle;
+
+    // cv::circle(image, center, radius, cv::Scalar(0, 0, 255), 2, CV_AA);
+
+    // トップレベルにあるすべての輪郭を横断し，
+    // 各連結成分をランダムな色で描きます．
+    // int idx = 0;
+    // for( ; idx >= 0; idx = hierarchy[idx][0] )
+    // {
+    //     Scalar color(255, 0, 0);
+    //     drawContours(image, contours, idx, color, CV_FILLED, 8, hierarchy );
+    // }
+
+	cv::namedWindow("image_black_white");
+    cv::imshow("image_black_white",image_black_white);
+
+    cv::namedWindow("image");
+    cv::imshow("image",image);
+	return circles;
 }
