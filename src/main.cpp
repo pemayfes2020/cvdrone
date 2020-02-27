@@ -137,30 +137,17 @@ int main(int argc, char *argv[])
 
 
 		//標準出力で中心座標、半径を確認
-<<<<<<< HEAD
 		//drawCirlcles(ardrone.color_tracking(image, target_x, target_y, target_z));
 	    drawCirlcles(ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE));
-=======
-		std::vector<cv::Vec3f> circles = dcResult.second;
-
-		if(circles.size()){
-			std::cout << std::endl;
-			for(size_t i = 0;i < circles.size();i++){
-				std::cout << "\rx = " << cvRound(circles[i][0]) << " y = " << cvRound(circles[i][1]);
-				std::cout << "\rr = " << cvRound(circles[i][2]) << std::endl;
-			}
-			std::cout << std::endl;
-		}
 
 
 
->>>>>>> origin/master
 		
-		if (ardrone.getBatteryPercentage() < 10) {
-			std::cout << "Battery low !" << std::endl;
-			ardrone.landing();
-			break;
-		}
+		//if (ardrone.getBatteryPercentage() < 10) {
+		//	std::cout << "Battery low !" << std::endl;
+		//	ardrone.landing();
+		//	break;
+		//}
 	}
 
 	// See you
