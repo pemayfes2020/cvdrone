@@ -7,33 +7,6 @@
 // --------------------------------------------------------------------------
 
 
-cv::Mat tmpl;   //Mat型のtmplを用意し
-
-cv::Mat temp_match(cv::Mat image) {
-	cv::Mat result_mat;
-	cv::Mat gray_img;
-
-
-	cv::cvtColor(image, gray_img, cv::COLOR_BGR2GRAY, 0);  //カメラ画像をグレースケールに変換
-
-	cv::matchTemplate(gray_img, tmpl, result_mat, CV_TM_CCORR_NORMED);
-	cv::normalize(result_mat, result_mat, 0, 1, cv::NORM_MINMAX, -1, cv::Mat());
-
-	double minVal; double maxVal;
-	cv::Point minLoc, maxLoc, matchLoc;
-	cv::minMaxLoc(result_mat, &minVal, &maxVal, &minLoc, &maxLoc, cv::Mat());
-	matchLoc = maxLoc;
-
-	cv::rectangle(
-		image,
-		matchLoc,
-		cv::Point(matchLoc.x + 0.7 * tmpl.cols, matchLoc.y + 0.7 * tmpl.rows),
-		CV_RGB(255, 0, 0),
-		3);
-
-	return image;
-}
-
 int main(int argc, char *argv[])
 {
 	// AR.Drone class
@@ -69,11 +42,6 @@ int main(int argc, char *argv[])
 	std::cout << "*    'Esc'   -- Exit                  *" << std::endl;
 	std::cout << "*                                     *" << std::endl;
 	std::cout << "***************************************" << std::endl;
-
-
-	////////////////////////////2020/02/06
-	tmpl = cv::imread("template_circle.png", 0); //テンプレートをグレースケールで読み込む
-	////////////////////////////
 
 	//目標地点を格納
 	double target_x, target_y, target_z;
@@ -119,7 +87,8 @@ int main(int argc, char *argv[])
 		if (key == 'c') ardrone.setCamera(++mode % 4);
 
 		// Display the image
-		cv::imshow("camera", temp_match(image));
+		cv::imshow("camera", image);
+
 		if (ardrone.getBatteryPercentage() < 15) {
 			std::cout << "Battery low !" << std::endl;
 			ardrone.landing();
