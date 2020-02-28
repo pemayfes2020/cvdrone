@@ -12,7 +12,7 @@ const int ARRIVED = 3;
 
 
 //中心座標確認用
-void drawCirlcles(std::vector<cv::Vec3f> circles);
+void drawCircles(std::vector<double> circles);
 
 int main(int argc, char *argv[])
 {
@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
 		std::cout << "Failed to initialize." << std::endl;
 		return -1;
 	}
+
 
 	// Instructions
 	std::cout << "***************************************" << std::endl;
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
 				//その場で回転
 				vr = 1.0;
 
-				ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
+				//ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
 
 				break;
 			}
@@ -132,10 +133,8 @@ int main(int argc, char *argv[])
 		static int mode = 0;
 		if (key == 'c') ardrone.setCamera(++mode % 4);
 
-
 		//標準出力で中心座標、半径を確認
-		//drawCirlcles(ardrone.color_tracking(image, target_x, target_y, target_z));
-		ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
+		drawCircles(ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE));
 
 		
 		if (ardrone.getBatteryPercentage() < 10) {
@@ -152,7 +151,7 @@ int main(int argc, char *argv[])
 }
 
 //検出した円の中心座標、半径を標準出力で確認する用
-void drawCirlcles(std::vector<double> circles){
+void drawCircles(std::vector<double> circles){
 	if(circles.size()){
 			std::cout << std::endl;
 			for(size_t i = 0;i < circles.size();i++){
