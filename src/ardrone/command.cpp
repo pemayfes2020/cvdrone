@@ -65,7 +65,7 @@ int ARDrone::initCommand(void)
 
         // Set maximum velocity in Z-axis [mm/s]
         sockCommand.sendf("AT*CONFIG_IDS=%d,\"%s\",\"%s\",\"%s\"\r", ++seq, ARDRONE_SESSION_ID, ARDRONE_PROFILE_ID, ARDRONE_APPLOCATION_ID);
-        sockCommand.sendf("AT*CONFIG=%d,\"control:control_vz_max\",\"%d\"\r", ++seq, 70);	//初期値は700
+        sockCommand.sendf("AT*CONFIG=%d,\"control:control_vz_max\",\"%d\"\r", ++seq, 700);	//初期値は700
         msleep(100);
 
         // Set maximum yaw [rad/s]
@@ -80,7 +80,7 @@ int ARDrone::initCommand(void)
 
         // Set maximum altitude [mm]
         sockCommand.sendf("AT*CONFIG_IDS=%d,\"%s\",\"%s\",\"%s\"\r", ++seq, ARDRONE_SESSION_ID, ARDRONE_PROFILE_ID, ARDRONE_APPLOCATION_ID);
-        sockCommand.sendf("AT*CONFIG=%d,\"control:altitude_max\",\"%d\"\r", ++seq, 2000);	//初期値は3000
+        sockCommand.sendf("AT*CONFIG=%d,\"control:altitude_max\",\"%d\"\r", ++seq, 3000);	//初期値は3000
         msleep(100);
 
         // Bitrate control mode
