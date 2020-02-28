@@ -26,7 +26,7 @@ std::vector<double> ARDrone::detectCircle(cv::Mat image, double &target_x, doubl
 	 //http://carnation.is.konan-u.ac.jp/prezemi-1round/colorextraction.htm
     cv::Mat hsv, frame, hue, hue1, hue2, saturation, value, hue_saturation, image_black_white;  
 
-    std::vector<cv::Vec3f> circles;
+    std::vector<double> circles;
 
 	Mat img = image.clone();
     cv::cvtColor(image, hsv, CV_BGR2HSV);
@@ -99,6 +99,7 @@ std::vector<double> ARDrone::detectCircle(cv::Mat image, double &target_x, doubl
 
             if(circle_label > 0.47  && radius[i] > 8.0){
                 circle(image, center[i], (int)radius[i], cv::Scalar(0, 0, 255), 2, 8, 0 );
+                circles.push_back(radius[i]);
                 //cout << "radius = " << radius[i] << " S = " << S << endl;
             }
         }
