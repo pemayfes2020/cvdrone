@@ -21,7 +21,7 @@ using namespace std;
 #define  LOW_SATURATION 65              //saturation（彩度）の下限
 #define  LOW_VALUE      50              //value（明度）の下限
 
-std::vector<Vec3f> ARDrone::detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z, int LOW_HUE, int UP_HUE){
+std::vector<double> ARDrone::detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z, int LOW_HUE, int UP_HUE){
     //ref = http://opencv.jp/opencv-2svn/cpp/feature_detection.html
 	 //http://carnation.is.konan-u.ac.jp/prezemi-1round/colorextraction.htm
     cv::Mat hsv, frame, hue, hue1, hue2, saturation, value, hue_saturation, image_black_white;  
@@ -58,28 +58,50 @@ std::vector<Vec3f> ARDrone::detectCircle(cv::Mat image, double &target_x, double
 	vector<Point2f> center( contours.size() );
     vector<float> radius( contours.size() );
 
-    double ans = 0;
-    int ind = 0;    
 
-	for(int i = 0; i < contours.size(); i++ ){
-		approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
-        boundRect[i] = boundingRect( Mat(contours_poly[i]) );
-        minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
-		double L = arcLength(contours[i], true);
-		double S = contourArea(contours[i]);
-		double circle_label = 4 * M_PI * S / (L * L);
+    // vector<pair<double,double>> Scl;
 
-        if(ans > circle_label && S > 100){
-            ind = i;
-            ans = circle_label;
-        }
-    }
+    // if(!contours.size()){
+    //     for(int i = 0; i < contours.size(); i++ ){
+    //         approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
+    //         boundRect[i] = boundingRect( Mat(contours_poly[i]) );
+    //         minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
+    //         double L = arcLength(contours[i], true);
+    //         double S = contourArea(contours[i]);
+    //         double circle_label = 4 * M_PI * S / (L * L);
 
-    circle(image, center[ind], (int)radius[ind], cv::Scalar(0, 0, 255), 2, 8, 0 );
+    //         Scl[i].first = (-1.0) * S;
+    //         Scl[i].second = circle_label;
 
-    //if(1){
-	    // if(circle_label > 0.47 && radius[i] > 5.0) circle(image, center[i], (int)radius[i], cv::Scalar(0, 0, 255), 2, 8, 0 );
+    //     }
+
+    //     sort(Scl.begin(),Scl.end());
+
+    //     int j = 0;
+
+    //     while(j < contours.size()){
+    //         if(Scl[j].second > 0.47){
+    //             break;
+    //         }
+    //     }
+
+    //     circle(image, center[j], (int)radius[j], cv::Scalar(0, 0, 255), 2, 8, 0 );
+
     // }
+
+    for(int i = 0; i < contours.size(); i++ ){
+            approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
+            boundRect[i] = boundingRect( Mat(contours_poly[i]) );
+            minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
+            double L = arcLength(contours[i], true);
+            double S = contourArea(contours[i]);
+            double circle_label = 4 * M_PI * S / (L * L);
+
+            if(circle_label > 0.47  && radius[i] > 8.0){
+                circle(image, center[i], (int)radius[i], cv::Scalar(0, 0, 255), 2, 8, 0 );
+                //cout << "radius = " << radius[i] << " S = " << S << endl;
+            }
+        }
 
 	cv::namedWindow("image_black_white");
     cv::imshow("image_black_white",image_black_white);
