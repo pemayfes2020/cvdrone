@@ -1,6 +1,8 @@
 #include "ardrone.h"
 #include <iostream>
 #include <vector>
+#include <algorithm>
+
 // The code decoding H.264 video is based on the following sites.
 // - An ffmpeg and SDL Tutorial - Tutorial 01: Making Screencaps -
 //   http://dranger.com/ffmpeg/tutorial01.html
@@ -28,7 +30,7 @@ std::vector<Vec3f> ARDrone::detectCircle(cv::Mat image, double &target_x, double
 
 	Mat img = image.clone();
     cv::cvtColor(image, hsv, CV_BGR2HSV);
-    //cv::GaussianBlur(img, img, cv::Size(9,9), 2, 2);
+    cv::GaussianBlur(img, img, cv::Size(9,9), 2, 2);
 	//cv::bilateralFilter(img, img, 10, 100, 10, cv::BORDER_DEFAULT);
 
     std::vector<cv::Mat> singlechannels;//Matクラスのベクトルとしてsinglechannelsを定義
@@ -45,9 +47,6 @@ std::vector<Vec3f> ARDrone::detectCircle(cv::Mat image, double &target_x, double
     cv::bitwise_and(hue, saturation, hue_saturation);                                       // hueとsaturationのbitごとのandをとる→hue_saturation
     cv::bitwise_and(hue_saturation, value, image_black_white);                              // hue_saturationとvalueのbitごとのandをとる→image_black_white
     
-    //cv::Canny(image_black_white,image_black_white,125, 125);
-
-
 	vector<vector<Point> > contours;
     vector<Vec4i> hierarchy;
 
@@ -57,28 +56,29 @@ std::vector<Vec3f> ARDrone::detectCircle(cv::Mat image, double &target_x, double
 	vector<vector<Point> > contours_poly( contours.size() );
 	vector<Rect> boundRect( contours.size() );
 	vector<Point2f> center( contours.size() );
- 	vector<float> radius( contours.size() );
+    vector<float> radius( contours.size() );
 
-	for( int i = 0; i < contours.size(); i++ ){
+    double ans = 0;
+    int ind = 0;    
+
+	for(int i = 0; i < contours.size(); i++ ){
 		approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
         boundRect[i] = boundingRect( Mat(contours_poly[i]) );
         minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
 		double L = arcLength(contours[i], true);
 		double S = contourArea(contours[i]);
 		double circle_label = 4 * M_PI * S / (L * L);
-	    if(circle_label > 0.55 && radius[i] > 5.0)circle(image, center[i], (int)radius[i], cv::Scalar(0, 0, 255), 2, 8, 0 );
+
+        if(ans > circle_label && S > 100){
+            ind = i;
+            ans = circle_label;
+        }
     }
 
+    circle(image, center[ind], (int)radius[ind], cv::Scalar(0, 0, 255), 2, 8, 0 );
 
-    // cv::circle(image, center, radius, cv::Scalar(0, 0, 255), 2, CV_AA);
-
-    // トップレベルにあるすべての輪郭を横断し，
-    // 各連結成分をランダムな色で描きます．
-    // int idx = 0;
-    // for( ; idx >= 0; idx = hierarchy[idx][0] )
-    // {
-    //     Scalar color(255, 0, 0);
-    //     drawContours(image, contours, idx, color, CV_FILLED, 8, hierarchy );
+    //if(1){
+	    // if(circle_label > 0.47 && radius[i] > 5.0) circle(image, center[i], (int)radius[i], cv::Scalar(0, 0, 255), 2, 8, 0 );
     // }
 
 	cv::namedWindow("image_black_white");

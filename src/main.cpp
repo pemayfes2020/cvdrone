@@ -14,8 +14,6 @@ const int ARRIVED = 3;
 //中心座標確認用
 void drawCirlcles(std::vector<cv::Vec3f> circles);
 
-
-
 int main(int argc, char *argv[])
 {
 	// AR.Drone class
@@ -68,9 +66,10 @@ int main(int argc, char *argv[])
 		//Take off / Landing 
 		if (key == ' ') {
 			if (ardrone.onGround()) ardrone.takeoff();
-			else                    ardrone.landing();
+			else ardrone.landing();
 		}
 
+		
 
 		//phaseごとに分ける
 
