@@ -89,7 +89,8 @@ int main(int argc, char *argv[])
 				//その場で回転
 				vr = 1.0;
 
-				drawCirlcles(ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE));
+				//drawCirlcles(ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE));
+				ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
 
 				break;
 			}
@@ -135,7 +136,8 @@ int main(int argc, char *argv[])
 
 		//標準出力で中心座標、半径を確認
 		//drawCirlcles(ardrone.color_tracking(image, target_x, target_y, target_z));
-		drawCirlcles(ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE));
+		//drawCirlcles(ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE));
+		ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
 
 		
 		if (ardrone.getBatteryPercentage() < 10) {
