@@ -74,7 +74,6 @@ int main(int argc, char *argv[])
 
 	
 		//phaseごとに分ける
-
 		
 		double vx = 0.0, vy = 0.0, vz = 0.0, vr = 0.0;
 
@@ -106,7 +105,7 @@ int main(int argc, char *argv[])
 				break;
 			}
 		}
-		double vx_now, vy_now, x_now, y_now, z_now;
+		/*double vx_now, vy_now, x_now, y_now, z_now;	//手動で動かす部分はとりあえずコメントアウト
 		ardrone.getVelocity(&vx_now, &vy_now, 0);	
 		
 		switch (key) {
@@ -126,7 +125,7 @@ int main(int argc, char *argv[])
 			std::cout << "\r" << "(" << x_now << ", " << y_now << ", " << z_now;
 			std::cout << "), trg = (" << target_x << ", " << target_y << ", " << target_z;
 		    std::cout << "), alt = " << ardrone.getAltitude();
-		}
+		}*/
 		ardrone.move3D(vx, vy, vz, vr);
 
 		// Change camera
@@ -139,11 +138,11 @@ int main(int argc, char *argv[])
 		drawCirlcles(ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE));
 
 		
-		//if (ardrone.getBatteryPercentage() < 10) {
-		//	std::cout << "Battery low !" << std::endl;
-		//	ardrone.landing();
-		//	break;
-		//}
+		if (ardrone.getBatteryPercentage() < 10) {
+			std::cout << "Battery low !" << std::endl;
+			ardrone.landing();
+			break;
+		}
 	}
 
 	// See you
