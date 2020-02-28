@@ -1042,7 +1042,7 @@ public:
     virtual ~ARDrone();
 
     //byYutarotaro
-    virtual std::vector<cv::Vec3f> detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z, int LOW_HUE, int UP_HUE);
+    virtual std::vector<double> detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z, int LOW_HUE, int UP_HUE);
 
 	virtual std::vector<cv::Vec3f> color_tracking(cv::Mat image, double &target_x, double &target_y, double &target_z);
 

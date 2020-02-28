@@ -1,6 +1,8 @@
 #include "ardrone.h"
 #include <iostream>
 #include <vector>
+#include <algorithm>
+
 // The code decoding H.264 video is based on the following sites.
 // - An ffmpeg and SDL Tutorial - Tutorial 01: Making Screencaps -
 //   http://dranger.com/ffmpeg/tutorial01.html
@@ -19,7 +21,7 @@ using namespace std;
 #define  LOW_SATURATION 65              //saturation（彩度）の下限
 #define  LOW_VALUE      50              //value（明度）の下限
 
-std::vector<Vec3f> ARDrone::detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z, int LOW_HUE, int UP_HUE){
+std::vector<double> ARDrone::detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z, int LOW_HUE, int UP_HUE){
     //ref = http://opencv.jp/opencv-2svn/cpp/feature_detection.html
 	 //http://carnation.is.konan-u.ac.jp/prezemi-1round/colorextraction.htm
     cv::Mat hsv, frame, hue, hue1, hue2, saturation, value, hue_saturation, image_black_white;  
@@ -28,7 +30,7 @@ std::vector<Vec3f> ARDrone::detectCircle(cv::Mat image, double &target_x, double
 
 	Mat img = image.clone();
     cv::cvtColor(image, hsv, CV_BGR2HSV);
-    //cv::GaussianBlur(img, img, cv::Size(9,9), 2, 2);
+    cv::GaussianBlur(img, img, cv::Size(9,9), 2, 2);
 	//cv::bilateralFilter(img, img, 10, 100, 10, cv::BORDER_DEFAULT);
 
     std::vector<cv::Mat> singlechannels;//Matクラスのベクトルとしてsinglechannelsを定義
@@ -45,9 +47,6 @@ std::vector<Vec3f> ARDrone::detectCircle(cv::Mat image, double &target_x, double
     cv::bitwise_and(hue, saturation, hue_saturation);                                       // hueとsaturationのbitごとのandをとる→hue_saturation
     cv::bitwise_and(hue_saturation, value, image_black_white);                              // hue_saturationとvalueのbitごとのandをとる→image_black_white
     
-    //cv::Canny(image_black_white,image_black_white,125, 125);
-
-
 	vector<vector<Point> > contours;
     vector<Vec4i> hierarchy;
 
@@ -57,29 +56,52 @@ std::vector<Vec3f> ARDrone::detectCircle(cv::Mat image, double &target_x, double
 	vector<vector<Point> > contours_poly( contours.size() );
 	vector<Rect> boundRect( contours.size() );
 	vector<Point2f> center( contours.size() );
- 	vector<float> radius( contours.size() );
-
-	for( int i = 0; i < contours.size(); i++ ){
-		approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
-        boundRect[i] = boundingRect( Mat(contours_poly[i]) );
-        minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
-		double L = arcLength(contours[i], true);
-		double S = contourArea(contours[i]);
-		double circle_label = 4 * M_PI * S / (L * L);
-	    if(circle_label > 0.55 && radius[i] > 5.0)circle(image, center[i], (int)radius[i], cv::Scalar(0, 0, 255), 2, 8, 0 );
-    }
+    vector<float> radius( contours.size() );
 
 
-    // cv::circle(image, center, radius, cv::Scalar(0, 0, 255), 2, CV_AA);
+    // vector<pair<double,double>> Scl;
 
-    // トップレベルにあるすべての輪郭を横断し，
-    // 各連結成分をランダムな色で描きます．
-    // int idx = 0;
-    // for( ; idx >= 0; idx = hierarchy[idx][0] )
-    // {
-    //     Scalar color(255, 0, 0);
-    //     drawContours(image, contours, idx, color, CV_FILLED, 8, hierarchy );
+    // if(!contours.size()){
+    //     for(int i = 0; i < contours.size(); i++ ){
+    //         approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
+    //         boundRect[i] = boundingRect( Mat(contours_poly[i]) );
+    //         minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
+    //         double L = arcLength(contours[i], true);
+    //         double S = contourArea(contours[i]);
+    //         double circle_label = 4 * M_PI * S / (L * L);
+
+    //         Scl[i].first = (-1.0) * S;
+    //         Scl[i].second = circle_label;
+
+    //     }
+
+    //     sort(Scl.begin(),Scl.end());
+
+    //     int j = 0;
+
+    //     while(j < contours.size()){
+    //         if(Scl[j].second > 0.47){
+    //             break;
+    //         }
+    //     }
+
+    //     circle(image, center[j], (int)radius[j], cv::Scalar(0, 0, 255), 2, 8, 0 );
+
     // }
+
+    for(int i = 0; i < contours.size(); i++ ){
+            approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
+            boundRect[i] = boundingRect( Mat(contours_poly[i]) );
+            minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
+            double L = arcLength(contours[i], true);
+            double S = contourArea(contours[i]);
+            double circle_label = 4 * M_PI * S / (L * L);
+
+            if(circle_label > 0.47  && radius[i] > 8.0){
+                circle(image, center[i], (int)radius[i], cv::Scalar(0, 0, 255), 2, 8, 0 );
+                //cout << "radius = " << radius[i] << " S = " << S << endl;
+            }
+        }
 
 	cv::namedWindow("image_black_white");
     cv::imshow("image_black_white",image_black_white);
