@@ -7,8 +7,8 @@
 // --------------------------------------------------------------------------
 const int START = 0;
 const int FIND_OBJECT = 1;
-const int GO_TOWARDS = 2;
-const int ROTATE = 3;
+const int ROTATE = 2;
+const int GO_TOWARDS = 3;
 const int ARRIVED = 4;
 
 
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 				if(r.size() == 1){
 					//std::cout << r[0].first.x << std::endl;
 
-					if(abs(r[0].second - pre_radius) < 0.3 && r[0].first.x > 290) phase = ROTATE;
+					if(abs(r[0].second - pre_radius) < 0.3 && r[0].first.x > 200) phase = ROTATE;
 
 					pre_radius = r[0].second;
 				}
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 				vr = -0.5;
 				r = ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
 
-				if(r[0].first.x < 350){
+				if(r.size() == 1 && r[0].first.x < 400){
 					phase = GO_TOWARDS;
 				}
 			}
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 
 					std::cout << r[0].second << std::endl;
 
-					if(r[0].second > 25 || go_count > 30){
+					if(r[0].second > 30 || go_count > 30){
 						phase = ARRIVED;
 					}
 				}
