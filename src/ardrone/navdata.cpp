@@ -324,7 +324,7 @@ double ARDrone::getVelocity(double *vx, double *vy, double *vz)
 	navdata.time_now = clock();
 	double diff_time = (double)(navdata.time_now - navdata.time_prev)/CLOCKS_PER_SEC;
 	std::cout << "; diff_time = " << diff_time;
-	if (diff_time < 1.0) {
+	if (diff_time < 0.1 && !onGround()) {
 		navdata.pos_x += velocity_x * diff_time;
 		navdata.pos_y += velocity_y * diff_time;
 		navdata.pos_z += velocity_z * diff_time;
