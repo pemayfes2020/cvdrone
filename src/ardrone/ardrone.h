@@ -49,7 +49,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <math.h>
-#include <time.h>
 
 // OpenCV 1.0
 //#include <opencv/cv.h>
@@ -368,10 +367,6 @@ struct ARDRONE_NAVDATA {
     unsigned int ardrone_state;
     unsigned int sequence;
     unsigned int vision_defined;
-
-	//à íuÇãÅÇﬂÇÈóp
-	clock_t time_now, time_prev;
-	double pos_x, pos_y, pos_z;
 
     // Demo
     struct NAVDATA_DEMO {
@@ -1047,7 +1042,7 @@ public:
     virtual ~ARDrone();
 
     //byYutarotaro
-    virtual std::vector<double> detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z, int LOW_HUE, int UP_HUE);
+    virtual std::vector<std::pair<cv::Point,double> > detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z, int LOW_HUE, int UP_HUE);
 
 	virtual std::vector<cv::Vec3f> color_tracking(cv::Mat image, double &target_x, double &target_y, double &target_z);
 
@@ -1075,10 +1070,6 @@ public:
     virtual double getAltitude(void);   // Altitude    [m]
     virtual double getVelocity(double *vx = NULL, double *vy = NULL, double *vz = NULL); // Velocity [m/s]
     virtual int    getPosition(double *latitude = NULL, double *longitude = NULL, double *elevation = NULL); // GPS (only for AR.Drone 2.0)
-																											 
-	//à íuÇãÅÇﬂÇÈä÷êî
-	virtual void mygetPosition(double *x, double *y, double *z);
-	virtual void resetPosition();
 
     // Battery charge [%]
     virtual int getBatteryPercentage(void);
@@ -1091,7 +1082,6 @@ public:
     // Move with velocity [m/s]
     virtual void move(double vx, double vy, double vr);
     virtual void move3D(double vx, double vy, double vz, double vr);
-	virtual void keepPosition(double x, double y, double z, double *vx, double *vy, double *vz);
 
     // Change camera channel
     virtual void setCamera(int channel);
