@@ -304,9 +304,7 @@ double ARDrone::getAltitude(void)
 //! @return Velocity [m/s]
 // --------------------------------------------------------------------------
 double ARDrone::getVelocity(double *vx, double *vy, double *vz)
-{	//‘¬“x‚ÌÏ•ª‚ÅˆÊ’u‚ğ‹‚ß‚é
-	navdata.time_prev = navdata.time_now;
-
+{
     // Get the data
     if (mutexNavdata) pthread_mutex_lock(mutexNavdata);
     double velocity_x =  navdata.demo.vx * 0.001;
@@ -319,16 +317,6 @@ double ARDrone::getVelocity(double *vx, double *vy, double *vz)
     if (vx) *vx = velocity_x;
     if (vy) *vy = velocity_y;
     if (vz) *vz = velocity_z;
-
-	
-	navdata.time_now = clock();
-	double diff_time = (double)(navdata.time_now - navdata.time_prev)/CLOCKS_PER_SEC;
-	std::cout << "; diff_time = " << diff_time;
-	if (diff_time < 1.0) {
-		navdata.pos_x += velocity_x * diff_time;
-		navdata.pos_y += velocity_y * diff_time;
-		navdata.pos_z += velocity_z * diff_time;
-	}
 
     // Velocity [m/s]
     double velocity = sqrt(velocity_x*velocity_x + velocity_y*velocity_y + velocity_z*velocity_z);
@@ -362,18 +350,7 @@ int ARDrone::getPosition(double *latitude, double *longitude, double *elevation)
 
     return available;
 }
-void ARDrone::mygetPosition(double *x, double *y, double *z) {
-	if (x) *x = navdata.pos_x;
-	if (y) *y = navdata.pos_y;
-	if (z) *z = navdata.pos_z;
-}
 
-void ARDrone::resetPosition() {
-	navdata.pos_x = 0.0;
-	navdata.pos_y = 0.0;
-	navdata.pos_z = 0.0;
-
-}
 // --------------------------------------------------------------------------
 //! @brief   Get current battery percentage of AR.Drone.
 //! @return  Battery percentage [%]

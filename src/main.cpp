@@ -7,8 +7,9 @@
 // --------------------------------------------------------------------------
 const int START = 0;
 const int FIND_OBJECT = 1;
-const int GO_TOWARDS = 2;
-const int ARRIVED = 3;
+const int ROTATE = 2;
+const int GO_TOWARDS = 3;
+const int ARRIVED = 4;
 
 
 //中心座標確認用
@@ -33,14 +34,11 @@ int main(int argc, char *argv[])
 	std::cout << "*    'Space' -- Takeoff/Landing       *" << std::endl;
 	std::cout << "*    'Up'    -- Move forward          *" << std::endl;
 	std::cout << "*    'Down'  -- Move backward         *" << std::endl;
-	std::cout << "*    'Left'  -- Move left             *" << std::endl;
-	std::cout << "*    'Right' -- Move right            *" << std::endl;
-	std::cout << "*    'A'     -- Turn left             *" << std::endl;
-	std::cout << "*    'D'     -- Turn right            *" << std::endl;
-	std::cout << "*    'W'     -- Move upward           *" << std::endl;
-	std::cout << "*    'S'     -- Move downward         *" << std::endl;
-	std::cout << "*    'R'     -- reset position        *" << std::endl;
-	std::cout << "*                                     *" << std::endl;
+	std::cout << "*    'Left'  -- Turn left             *" << std::endl;
+	std::cout << "*    'Right' -- Turn right            *" << std::endl;
+	std::cout << "*    'Q'     -- Move upward           *" << std::endl;
+	std::cout << "*    'A'     -- Move downward         *" << std::endl;
+	std::cout << "*    'B'     -- auto-up-and-down      *" << std::endl;
 	std::cout << "* - Others -                          *" << std::endl;
 	std::cout << "*    'C'     -- Change camera         *" << std::endl;
 	std::cout << "*    'Esc'   -- Exit                  *" << std::endl;
@@ -54,13 +52,21 @@ int main(int argc, char *argv[])
 	int phase = START;
 
 	double pre_alt = 0;
+	int pre_radius = 0;
+
+	int go_count = 0;
 
 	int LOW_HUE = 95;           //hueの下限
 	int UP_HUE = 105;              //hueの上限
 
+	int pre_phase = -1;
+
+	std::vector<std::pair<cv::Point,double>> r;
+
+
 	while (1) {
 		// Key input
-		int key = cv::waitKey(32);
+		int key = cv::waitKey(5);
 		if (key == 0x1b) break;
 
 		// Get an image
@@ -75,66 +81,111 @@ int main(int argc, char *argv[])
 
 	
 		//phaseごとに分ける
+
 		
 		double vx = 0.0, vy = 0.0, vz = 0.0, vr = 0.0;
 
 		switch (phase){
-			case START:{
-			    if(abs(pre_alt - ardrone.getAltitude()) < 0.5 && pre_alt){
-					phase = 1;//FIND_OBJECTへ
+			case START:{//0
+
+				cv::imshow("image", image);
+				//std::cout << image.size().width << std::endl;
+			    if(abs(pre_alt - ardrone.getAltitude()) < 0.05 && pre_alt){
+					phase = FIND_OBJECT;//FIND_OBJECTへ
 				}
 				pre_alt = ardrone.getAltitude();
-				break;
 			}
-			case FIND_OBJECT:{
+
+				break;
+			
+			case FIND_OBJECT:{  //1
 				//その場で回転
-				vr = 1.0;
+				vr = 0.5;
 
-				//ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
+				r = ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
+
+				if(r.size() == 1){
+					//std::cout << r[0].first.x << std::endl;
+
+					if(abs(r[0].second - pre_radius) < 0.3 && r[0].first.x > 200) phase = ROTATE;
+
+					pre_radius = r[0].second;
+				}
+			}
+				break;
+			
+			case ROTATE: {//2
+				vr = -0.5;
+				r = ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
+
+				if(r.size() == 1 && r[0].first.x < 400){
+					phase = GO_TOWARDS;
+				}
+			}
+				break;
+			
+			case GO_TOWARDS: {//3
+				vx = 0.5;
+				go_count++;
+				r = ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
+				
+				if(r.size() == 1){
+					//std::cout << r[0].first.x << std::endl;
+
+					std::cout << r[0].second << std::endl;
+
+					if(r[0].second > 30){
+						phase = ARRIVED;
+					}
+				}
+			}
 
 				break;
-			}
-			case GO_TOWARDS:{
-				vx = 1.0;
-
-				break;
-			}
+			
 			case ARRIVED:{
-				break;
+				ardrone.landing();
+				cv::imshow("image", image);
 			}
+				break;
+			
 			default:{
-				break;
+				cv::imshow("image", image);
 			}
+				break;
+			
 		}
-		/*double vx_now, vy_now, x_now, y_now, z_now;	//手動で動かす部分はとりあえずコメントアウト
-		ardrone.getVelocity(&vx_now, &vy_now, 0);	
-		
-		switch (key) {
-		case CV_VK_UP:		target_y += 0.5; break;
-		case CV_VK_DOWN:	target_y += -0.5; break;
-		case CV_VK_LEFT:	target_x += 0.5; break;
-		case CV_VK_RIGHT:	target_x += -0.5; break;
-		case 'a':	vr = 1.0; break;
-		case 'd':	vr = -1.0; break;
-		case 'w':	vz = 1.0; break;
-		case 's':	vz = -1.0; break;
-		case 'r':	ardrone.resetPosition();
 
-		default:
-			ardrone.keepPosition(target_x, target_y, target_z, &vx, &vy, &vz);
-			ardrone.mygetPosition(&x_now, &y_now, &z_now);
-			std::cout << "\r" << "(" << x_now << ", " << y_now << ", " << z_now;
-			std::cout << "), trg = (" << target_x << ", " << target_y << ", " << target_z;
-		    std::cout << "), alt = " << ardrone.getAltitude();
-		}*/
+		
 		ardrone.move3D(vx, vy, vz, vr);
+
+		if(pre_phase != phase){
+			std::cout << "phase = " << phase << std::endl;
+			pre_phase = phase;
+		}
+
+		// // Move
+		// double vx = 0.0, vy = 0.0, vz = 0.0, vr = 0.0;
+		// switch (key) {
+		// case CV_VK_UP:		vx = 1.0; break;
+		// case CV_VK_DOWN:	vx = -1.0; break;
+		// case CV_VK_LEFT:	vy = 1.0; break;
+		// case CV_VK_RIGHT:	vy = -1.0; break;
+		// case 'j':	vy = 1.0; break;
+		// case 'l':	vy = -1.0; break;
+		// case 'q':	vz = 1.0; break;
+		// case 'a':	vz = -1.0; break;
+		// default:
+		// 	break;
+		// }
+		//ardrone.move3D(vx, vy, vz, vr);
 
 		// Change camera
 		static int mode = 0;
 		if (key == 'c') ardrone.setCamera(++mode % 4);
 
 		//標準出力で中心座標、半径を確認
-		drawCircles(ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE));
+		//drawCirlcles(ardrone.color_tracking(image, target_x, target_y, target_z));
+		//drawCirlcles(ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE));
 
 		
 		if (ardrone.getBatteryPercentage() < 10) {

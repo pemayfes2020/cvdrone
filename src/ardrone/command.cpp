@@ -65,7 +65,7 @@ int ARDrone::initCommand(void)
 
         // Set maximum velocity in Z-axis [mm/s]
         sockCommand.sendf("AT*CONFIG_IDS=%d,\"%s\",\"%s\",\"%s\"\r", ++seq, ARDRONE_SESSION_ID, ARDRONE_PROFILE_ID, ARDRONE_APPLOCATION_ID);
-        sockCommand.sendf("AT*CONFIG=%d,\"control:control_vz_max\",\"%d\"\r", ++seq, 700);	//èâä˙ílÇÕ700
+        sockCommand.sendf("AT*CONFIG=%d,\"control:control_vz_max\",\"%d\"\r", ++seq, 700);
         msleep(100);
 
         // Set maximum yaw [rad/s]
@@ -80,7 +80,7 @@ int ARDrone::initCommand(void)
 
         // Set maximum altitude [mm]
         sockCommand.sendf("AT*CONFIG_IDS=%d,\"%s\",\"%s\",\"%s\"\r", ++seq, ARDRONE_SESSION_ID, ARDRONE_PROFILE_ID, ARDRONE_APPLOCATION_ID);
-        sockCommand.sendf("AT*CONFIG=%d,\"control:altitude_max\",\"%d\"\r", ++seq, 3000);	//èâä˙ílÇÕ3000
+        sockCommand.sendf("AT*CONFIG=%d,\"control:altitude_max\",\"%d\"\r", ++seq, 3000);
         msleep(100);
 
         // Bitrate control mode
@@ -294,17 +294,6 @@ void ARDrone::move3D(double vx, double vy, double vz, double vr)
         sockCommand.sendf("AT*PCMD=%d,%d,%d,%d,%d,%d\r", ++seq, mode, *(int*)(&v[0]), *(int*)(&v[1]), *(int*)(&v[2]), *(int*)(&v[3]));
         if (mutexCommand) pthread_mutex_unlock(mutexCommand);
     }
-}
-
-void ARDrone::keepPosition(double x, double y, double z, double *vx, double *vy, double *vz) {
-	//îÚçséû
-	if (!onGround()) {
-		float Kp = 1.0;
-		//Pêßå‰
-		if (vx) *vx = Kp * (x - navdata.pos_x);
-		if (vy) *vy = Kp * (y - navdata.pos_y);
-		if (vz) *vz = Kp * (z - navdata.pos_z);
-	}
 }
 
 // --------------------------------------------------------------------------

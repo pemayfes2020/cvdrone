@@ -21,12 +21,12 @@ using namespace std;
 #define  LOW_SATURATION 65              //saturation（彩度）の下限
 #define  LOW_VALUE      50              //value（明度）の下限
 
-std::vector<double> ARDrone::detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z, int LOW_HUE, int UP_HUE){
+std::vector<pair<Point,double>> ARDrone::detectCircle(cv::Mat image, double &target_x, double &target_y, double &target_z, int LOW_HUE, int UP_HUE){
     //ref = http://opencv.jp/opencv-2svn/cpp/feature_detection.html
 	 //http://carnation.is.konan-u.ac.jp/prezemi-1round/colorextraction.htm
     cv::Mat hsv, frame, hue, hue1, hue2, saturation, value, hue_saturation, image_black_white;  
 
-    std::vector<double> circles;
+    std::vector<pair<Point,double>> circles;
 
 	Mat img = image.clone();
     cv::cvtColor(image, hsv, CV_BGR2HSV);
@@ -99,7 +99,8 @@ std::vector<double> ARDrone::detectCircle(cv::Mat image, double &target_x, doubl
 
             if(circle_label > 0.47  && radius[i] > 8.0){
                 circle(image, center[i], (int)radius[i], cv::Scalar(0, 0, 255), 2, 8, 0 );
-                circles.push_back(radius[i]);
+                cout << "center = (" << center[i].x << ' ' << center[i].y << ") r = " << radius[i] << endl;
+                circles.push_back(make_pair(Point(cvRound(center[i].x),cvRound(center[i].y)),radius[i]));
                 //cout << "radius = " << radius[i] << " S = " << S << endl;
             }
         }
