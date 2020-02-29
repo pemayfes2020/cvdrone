@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 
 					std::cout << r[0].second << std::endl;
 
-					if(r[0].second > 30 || go_count > 30){
+					if(r[0].second > 30){
 						phase = ARRIVED;
 					}
 				}
