@@ -299,11 +299,14 @@ void ARDrone::move3D(double vx, double vy, double vz, double vr)
 void ARDrone::keepPosition(double x, double y, double z, double *vx, double *vy, double *vz) {
 	//îÚçséû
 	if (!onGround()) {
-		float Kp = 20;
+		double vxnow, vynow, vznow;
+                getVelocity(&vxnow, &vynow, &vznow);
+                float Ki = 0.01;
+                float Kp = 5.0;
 		//Pêßå‰
-		if (vx) *vx = Kp * (x - navdata.pos_x);
-		if (vy) *vy = Kp * (y - navdata.pos_y);
-		if (vz) *vz = Kp * (z - navdata.pos_z);
+		if (vx) *vx = Ki*vxnow + Kp * (x - navdata.pos_x);
+		if (vy) *vy = Ki*vynow + Kp * (y - navdata.pos_y);
+		if (vz) *vz = Ki*vznow + Kp * (z - navdata.pos_z);
 	}
 }
 

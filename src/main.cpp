@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
 	//–Ú•W’n“_‚ðŠi”[
 	double target_x, target_y, target_z;
-        target_x = 0.0; target_y = 0.0; target_z = 0.0;
+        target_x = 0.0; target_y = 0.0; target_z = 0.4444;
 
 	while (1) {
 		// Key input
@@ -59,8 +59,11 @@ int main(int argc, char *argv[])
 
 		// Take off / Landing 
 		if (key == ' ') {
-			if (ardrone.onGround()) ardrone.takeoff();
-			else                    ardrone.landing();
+			if (ardrone.onGround()){
+                            ardrone.takeoff();
+			}else{
+                            ardrone.landing();
+                        }
 		}
 
 		// Move
