@@ -306,7 +306,7 @@ double ARDrone::getAltitude(void)
 double ARDrone::getVelocity(double *vx, double *vy, double *vz)
 {	//‘¬“x‚ÌÏ•ª‚ÅˆÊ’u‚ğ‹‚ß‚é
 	navdata.time_prev = navdata.time_now;
-
+        double K = 2.0; //constant to precise position
     // Get the data
     if (mutexNavdata) pthread_mutex_lock(mutexNavdata);
     double velocity_x =  navdata.demo.vx * 0.001;
@@ -316,9 +316,9 @@ double ARDrone::getVelocity(double *vx, double *vy, double *vz)
     if (mutexNavdata) pthread_mutex_unlock(mutexNavdata);
 
     // Velocities
-    if (vx) *vx = velocity_x;
-    if (vy) *vy = velocity_y;
-    if (vz) *vz = velocity_z;
+    if (vx) *vx = K*velocity_x;
+    if (vy) *vy = K*velocity_y;
+    if (vz) *vz = K*velocity_z;
 
 	
 	navdata.time_now = clock();
@@ -374,6 +374,13 @@ void ARDrone::resetPosition() {
 	navdata.pos_z = 0.0;
 
 }
+
+void ARDrone::mysetPosition(double x, double y, double z){
+        if(x > 0) navdata.pos_x = x;
+        if(y > 0) navdata.pos_y = y;
+        if(z > 0) navdata.pos_z = z;
+}
+
 // --------------------------------------------------------------------------
 //! @brief   Get current battery percentage of AR.Drone.
 //! @return  Battery percentage [%]

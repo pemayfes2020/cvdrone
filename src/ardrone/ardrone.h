@@ -1074,6 +1074,7 @@ public:
 	//ˆÊ’u‚ğ‹‚ß‚éŠÖ”
 	virtual void mygetPosition(double *x, double *y, double *z);
 	virtual void resetPosition();
+        virtual void mysetPosition(double x, double y, double z);
 
     // Battery charge [%]
     virtual int getBatteryPercentage(void);

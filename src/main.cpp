@@ -61,6 +61,8 @@ int main(int argc, char *argv[])
 		if (key == ' ') {
 			if (ardrone.onGround()){
                             ardrone.takeoff();
+                            while(ardrone.getAltitude() < 0.1){}
+                            ardrone.mysetPosition(-1.0, -1.0, ardrone.getAltitude());
 			}else{
                             ardrone.landing();
                         }
