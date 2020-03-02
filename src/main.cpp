@@ -12,9 +12,6 @@ const int GO_TOWARDS = 3;
 const int ARRIVED = 4;
 
 
-//中心座標確認用
-void drawCirlcles(std::vector<cv::Vec3f> circles);
-
 int main(int argc, char *argv[])
 {
 	// AR.Drone class
@@ -55,6 +52,8 @@ int main(int argc, char *argv[])
 
 	int go_count = 0;
 
+
+	//はじめは青
 	int LOW_HUE = 95;           //hueの下限
 	int UP_HUE = 105;              //hueの上限
 
@@ -62,8 +61,11 @@ int main(int argc, char *argv[])
 
 	std::vector<std::pair<cv::Point,double>> r;
 
+	
 
 	while (1) {
+
+		phase = 0;
 		// Key input
 		int key = cv::waitKey(5);
 		if (key == 0x1b) break;
@@ -73,10 +75,10 @@ int main(int argc, char *argv[])
 
 		//飛ぶと危ないのでコメントアウトしてる
 		//Take off / Landing 
-		if(key == ' ') {
-			if (ardrone.onGround()) ardrone.takeoff();
-			else ardrone.landing();
-		}
+		// if(key == ' ') {
+		// 	if (ardrone.onGround()) ardrone.takeoff();
+		// 	else ardrone.landing();
+		// }
 
 	
 		//phaseごとに分ける
@@ -86,8 +88,9 @@ int main(int argc, char *argv[])
 
 		switch (phase){
 			case START:{//0
+				r = ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
 
-				cv::imshow("image", image);
+				//cv::imshow("image", image);
 				//std::cout << image.size().width << std::endl;
 			    if(abs(pre_alt - ardrone.getAltitude()) < 0.05 && pre_alt){
 					phase = FIND_OBJECT;//FIND_OBJECTへ
@@ -162,6 +165,31 @@ int main(int argc, char *argv[])
 			pre_phase = phase;
 		}
 
+		switch (key)
+		{
+		case 'r':
+			LOW_HUE = 170;
+			UP_HUE = 180;
+			phase = FIND_OBJECT;//FIND_OBJECTへ
+
+			break;
+
+		case 'b':
+			LOW_HUE = 95;           //hueの下限
+			UP_HUE = 105;              //hueの上限
+			phase = FIND_OBJECT;//FIND_OBJECTへ
+			break;
+
+		case 'y':
+			LOW_HUE = 22;           //hueの下限
+			UP_HUE = 32;              //hueの上限
+			phase = FIND_OBJECT;//FIND_OBJECTへ
+			break;
+
+		default:
+			break;
+		}
+
 		// // Move
 		// double vx = 0.0, vy = 0.0, vz = 0.0, vr = 0.0;
 		// switch (key) {
@@ -201,13 +229,3 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-//検出した円の中心座標、半径を標準出力で確認する用
-void drawCirlcles(std::vector<double> circles){
-	if(circles.size()){
-			std::cout << std::endl;
-			for(size_t i = 0;i < circles.size();i++){
-				std::cout << "r = " << circles[i] << std::endl;
-			}
-			std::cout << std::endl;
-		}
-}
