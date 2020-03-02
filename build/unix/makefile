@@ -20,8 +20,6 @@ OBJS          = ../../src/ardrone/ardrone.o \
                 ../../src/ardrone/navdata.o \
                 ../../src/ardrone/version.o \
                 ../../src/ardrone/video.o   \
-                ../../src/ardrone/tempMatch.o\
-				../../src/ardrone/colorTracking.o\
                 ../../src/main.o
 PROGRAM       = test.a
 
