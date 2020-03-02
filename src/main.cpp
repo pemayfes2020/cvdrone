@@ -12,6 +12,10 @@ const int GO_TOWARDS = 3;
 const int ARRIVED = 4;
 
 
+int LOW_HUE;           //hueの下限
+int UP_HUE;			   //hueの上限
+
+
 int main(int argc, char *argv[])
 {
 	// AR.Drone class
@@ -22,6 +26,7 @@ int main(int argc, char *argv[])
 		std::cout << "Failed to initialize." << std::endl;
 		return -1;
 	}
+
 
 	// Instructions
 	std::cout << "***************************************" << std::endl;
@@ -52,20 +57,44 @@ int main(int argc, char *argv[])
 
 	int go_count = 0;
 
-
 	//はじめは青
-	int LOW_HUE = 95;           //hueの下限
-	int UP_HUE = 105;              //hueの上限
+
+	if(argc == 2){
+		char* c = argv[1];
+
+		switch (c[0])
+		{
+		case 'r':
+			LOW_HUE = 170;
+			UP_HUE = 180;
+			break;
+
+		case 'b':
+			LOW_HUE = 95;           //hueの下限
+			UP_HUE = 105;              //hueの上限
+			break;
+
+		case 'y':
+			LOW_HUE = 22;           //hueの下限
+			UP_HUE = 32;              //hueの上限
+			break;
+
+		default:
+			break;
+		}
+
+	}else{
+		LOW_HUE = 95;           //hueの下限
+		UP_HUE = 105; 
+	}
 
 	int pre_phase = -1;
 
 	std::vector<std::pair<cv::Point,double>> r;
 
-	
 
 	while (1) {
 
-		phase = 0;
 		// Key input
 		int key = cv::waitKey(5);
 		if (key == 0x1b) break;
@@ -75,10 +104,10 @@ int main(int argc, char *argv[])
 
 		//飛ぶと危ないのでコメントアウトしてる
 		//Take off / Landing 
-		// if(key == ' ') {
-		// 	if (ardrone.onGround()) ardrone.takeoff();
-		// 	else ardrone.landing();
-		// }
+		if(key == ' ') {
+			if (ardrone.onGround()) ardrone.takeoff();
+			else ardrone.landing();
+		}
 
 	
 		//phaseごとに分ける
@@ -90,8 +119,6 @@ int main(int argc, char *argv[])
 			case START:{//0
 				r = ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
 
-				//cv::imshow("image", image);
-				//std::cout << image.size().width << std::endl;
 			    if(abs(pre_alt - ardrone.getAltitude()) < 0.05 && pre_alt){
 					phase = FIND_OBJECT;//FIND_OBJECTへ
 				}
@@ -107,10 +134,7 @@ int main(int argc, char *argv[])
 				r = ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
 
 				if(r.size() == 1){
-					//std::cout << r[0].first.x << std::endl;
-
 					if(abs(r[0].second - pre_radius) < 0.3 && r[0].first.x > 200) phase = ROTATE;
-
 					pre_radius = r[0].second;
 				}
 			}
@@ -132,11 +156,9 @@ int main(int argc, char *argv[])
 				r = ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
 				
 				if(r.size() == 1){
-					//std::cout << r[0].first.x << std::endl;
-
 					std::cout << r[0].second << std::endl;
 
-					if(r[0].second > 30){
+					if(r[0].second > 20){
 						phase = ARRIVED;
 					}
 				}

@@ -108,6 +108,8 @@ std::vector<pair<Point,double>> ARDrone::detectCircle(cv::Mat image, double &tar
 	cv::namedWindow("image_black_white");
     cv::imshow("image_black_white",image_black_white);
 
+    cv::moveWindow("image_black_white", 640, 0);
+
     cv::namedWindow("image");
     cv::imshow("image",image);
 	return circles;
