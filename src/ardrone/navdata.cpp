@@ -306,28 +306,27 @@ double ARDrone::getAltitude(void)
 double ARDrone::getVelocity(double *vx, double *vy, double *vz)
 {	//ë¨ìxÇÃêœï™Ç≈à íuÇãÅÇﬂÇÈ
 	navdata.time_prev = navdata.time_now;
-        double K = 2.0; //constant to precise position
+        double K = 7.0; //constant to precise position
     // Get the data
     if (mutexNavdata) pthread_mutex_lock(mutexNavdata);
-    double velocity_x =  navdata.demo.vx * 0.001;
-    double velocity_y = -navdata.demo.vy * 0.001;
+    double velocity_x = 0.2f *  navdata.demo.vx * 0.001;
+    double velocity_y = 0.2f * navdata.demo.vy * (-0.001);
     //double velocity_z = -navdata.demo.vz * 0.001;
-    double velocity_z = -navdata.altitude.altitude_vz * 0.001;
+    double velocity_z = 1.0f * navdata.altitude.altitude_vz * (-0.001);
     if (mutexNavdata) pthread_mutex_unlock(mutexNavdata);
 
     // Velocities
-    if (vx) *vx = K*velocity_x;
-    if (vy) *vy = K*velocity_y;
-    if (vz) *vz = K*velocity_z;
+    if (vx) *vx = velocity_x;
+    if (vy) *vy = velocity_y;
+    if (vz) *vz = velocity_z;
 
 	
 	navdata.time_now = clock();
 	double diff_time = (double)(navdata.time_now - navdata.time_prev)/CLOCKS_PER_SEC;
-	std::cout << "; diff_time = " << diff_time;
 	if (diff_time < 0.1 && !onGround()) {
-		navdata.pos_x += velocity_x * diff_time;
-		navdata.pos_y += velocity_y * diff_time;
-		navdata.pos_z += velocity_z * diff_time;
+		navdata.pos_x += K*velocity_x * diff_time;
+		navdata.pos_y += K*velocity_y * diff_time;
+		navdata.pos_z += K*velocity_z * diff_time;
 	}
 
     // Velocity [m/s]

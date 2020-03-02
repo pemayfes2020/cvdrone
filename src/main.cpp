@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 			ardrone.keepPosition(target_x, target_y, target_z, &vx, &vy, &vz);
 			ardrone.mygetPosition(&x_now, &y_now, &z_now);
 			std::cout << "" << "(" << x_now << ", " << y_now << ", " << z_now;
-			std::cout << "), vel = (" << vx << ", " << vy << ", " << vz;
+			std::cout << "), vel = (" << vx_now << ", " << vy_now << ", " << vz_now;
 		    std::cout << "), alt = " << ardrone.getAltitude() << std::endl;
             }
 		ardrone.move3D(vx, vy, vz, vr);
