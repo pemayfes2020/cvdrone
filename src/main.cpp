@@ -87,8 +87,10 @@ int main(int argc, char *argv[])
 		default:
 			ardrone.keepPosition(target_x, target_y, target_z, &vx, &vy, &vz);
 			ardrone.mygetPosition(&x_now, &y_now, &z_now);
-			std::cout << "" << "(" << x_now << ", " << y_now << ", " << z_now;
-			std::cout << "), vel = (" << vx_now << ", " << vy_now << ", " << vz_now;
+			std::cout << std::fixed;
+                        std::cout << std::setprecision(3) << "" << "(" << x_now << ", " << y_now << ", " << z_now;
+			std::cout << "), vel = (" << vx << ", " << vy << ", " << vz;
+			std::cout << "), v_now = (" << vx_now << ", " << vy_now << ", " << vz_now;
                         std::cout << "), trg = (" << target_x << ", " << target_y << ", " << target_z;
 		    std::cout << "), alt = " << ardrone.getAltitude() << std::endl;
             }
