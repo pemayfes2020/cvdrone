@@ -301,8 +301,8 @@ void ARDrone::keepPosition(double x, double y, double z, double *vx, double *vy,
 	if (!onGround()) {
 		double vxnow, vynow, vznow;
                 getVelocity(&vxnow, &vynow, &vznow);
-                float Ki = 0.01;
-                float Kp = 5.0;
+                float Ki = 0.1;
+                float Kp = 1.0;
 		//Pêßå‰
 		if (vx) *vx = Ki*vxnow + Kp * (x - navdata.pos_x);
 		if (vy) *vy = Ki*vynow + Kp * (y - navdata.pos_y);

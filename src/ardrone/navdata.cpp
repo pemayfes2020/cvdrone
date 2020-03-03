@@ -306,7 +306,7 @@ double ARDrone::getAltitude(void)
 double ARDrone::getVelocity(double *vx, double *vy, double *vz)
 {	//‘¬“x‚ÌÏ•ª‚ÅˆÊ’u‚ğ‹‚ß‚é
 	navdata.time_prev = navdata.time_now;
-        double K = 7.0; //constant to precise position
+        double K = 5.0; //constant to precise position
     // Get the data
     if (mutexNavdata) pthread_mutex_lock(mutexNavdata);
     double velocity_x = 0.2f *  navdata.demo.vx * 0.001;
