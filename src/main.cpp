@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 		switch (c[0])
 		{
 		case 'r':
-			LOW_HUE = 170;
+			LOW_HUE = 162;
 			UP_HUE = 180;
 			break;
 
@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 				if(r.size() == 1){
 					std::cout << r[0].second << std::endl;
 
-					if(r[0].second > 20){
+					if(r[0].second > 15){
 						phase = ARRIVED;
 					}
 				}
@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
 		switch (key)
 		{
 		case 'r':
-			LOW_HUE = 170;
+			LOW_HUE = 162;
 			UP_HUE = 180;
 			phase = FIND_OBJECT;//FIND_OBJECTへ
 
