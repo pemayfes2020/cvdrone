@@ -1,4 +1,5 @@
 #include "ardrone/ardrone.h"
+#include <cstring> 
 
 // --------------------------------------------------------------------------
 // main(Number of arguments, Argument values)
@@ -18,6 +19,11 @@ int UP_HUE;			   //hueの上限
 
 int main(int argc, char *argv[])
 {
+
+	std::cout << "ボールの色を入力してね" << std::endl;
+
+	std::string color;
+	std::cin >> color;
 	// AR.Drone class
 	ARDrone ardrone;
 
@@ -44,6 +50,7 @@ int main(int argc, char *argv[])
 	// std::cout << "*    'Esc'   -- Exit                  *" << std::endl;
 	// std::cout << "***************************************" << std::endl;
 
+	std::cout << "準備完了！spaceを押して離陸" << std::endl;
 
 	// // Battery
 	std::cout << "Battery = " << ardrone.getBatteryPercentage() << "[%]" << std::endl;
@@ -84,8 +91,25 @@ int main(int argc, char *argv[])
 		}
 
 	}else{
-		LOW_HUE = 95;           //hueの下限
-		UP_HUE = 105; 
+		switch(color[0]){
+			case 'r':
+				LOW_HUE = 162;
+				UP_HUE = 180;
+				break;
+
+			case 'b':
+				LOW_HUE = 95;           //hueの下限
+				UP_HUE = 105;              //hueの上限
+				break;
+
+			case 'y':
+				LOW_HUE = 22;           //hueの下限
+				UP_HUE = 32;              //hueの上限
+				break;
+
+			default:
+				break;
+			}
 	}
 
 	int pre_phase = -1;
@@ -156,11 +180,12 @@ int main(int argc, char *argv[])
 				r = ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
 				
 				if(r.size() == 1){
-					std::cout << r[0].second << std::endl;
+					//std::cout << r[0].second << std::endl;
 
-					if(r[0].second > 15){
+					if(r[0].second > 25 || go_count > 15){
 						phase = ARRIVED;
 					}
+
 				}
 			}
 
@@ -183,7 +208,9 @@ int main(int argc, char *argv[])
 		ardrone.move3D(vx, vy, vz, vr);
 
 		if(pre_phase != phase){
-			std::cout << "phase = " << phase << std::endl;
+			std::string message[5] = {"離陸！","回転しながらボールを探す","ボール発見！\nボールに対してドローンの姿勢を真っ直ぐに戻す","ボールに近づく","着陸"};
+
+			std::cout << "phase = " << message[phase] << std::endl;
 			pre_phase = phase;
 		}
 

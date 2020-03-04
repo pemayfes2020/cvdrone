@@ -99,7 +99,7 @@ std::vector<pair<Point,double>> ARDrone::detectCircle(cv::Mat image, double &tar
 
             if(circle_label > 0.47  && radius[i] > 8.0){
                 circle(image, center[i], (int)radius[i], cv::Scalar(0, 0, 255), 2, 8, 0 );
-                cout << "center = (" << center[i].x << ' ' << center[i].y << ") r = " << radius[i] << endl;
+                cout << "\r" << "中心 = (" << center[i].x << ' ' << center[i].y << ") 半径 = " << radius[i] << endl;
                 circles.push_back(make_pair(Point(cvRound(center[i].x),cvRound(center[i].y)),radius[i]));
                 //cout << "radius = " << radius[i] << " S = " << S << endl;
             }
