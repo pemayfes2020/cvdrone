@@ -328,6 +328,7 @@ double ARDrone::getVelocity(double *vx, double *vy, double *vz)
 		navdata.pos_y += K*velocity_y * diff_time;
 		navdata.pos_z += K*velocity_z * diff_time;
 	}
+        std::cout << " diff = " << diff_time;
 
     // Velocity [m/s]
     double velocity = sqrt(velocity_x*velocity_x + velocity_y*velocity_y + velocity_z*velocity_z);

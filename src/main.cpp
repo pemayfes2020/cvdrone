@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 	//–Ú•W’n“_‚ðŠi”[
 	double target_x, target_y, target_z;
         target_x = 0.0; target_y = 0.0; target_z = 0.4444;
-
+        int mycount = 0;
 	while (1) {
 		// Key input
 		int key = cv::waitKey(5);
@@ -85,9 +85,16 @@ int main(int argc, char *argv[])
 		case 'r':	ardrone.resetPosition();
 
 		default:
-			ardrone.keepPosition(target_x, target_y, target_z, &vx, &vy, &vz);
+		        //ardrone.keepPosition(target_x, target_y, target_z, &vx, &vy, &vz);
 			ardrone.mygetPosition(&x_now, &y_now, &z_now);
-			std::cout << std::fixed;
+			if(mycount > 300 && ardrone.getAltitude() > 0.1){
+                                vz = 1;
+                                mycount++;
+                        }else if(ardrone.getAltitude() > 0.1){
+                                vz = 0;
+                                mycount++;
+                        }
+                        std::cout << std::fixed;
                         std::cout << std::setprecision(3) << "" << "(" << x_now << ", " << y_now << ", " << z_now;
 			std::cout << "), vel = (" << vx << ", " << vy << ", " << vz;
 			std::cout << "), v_now = (" << vx_now << ", " << vy_now << ", " << vz_now;
