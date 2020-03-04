@@ -182,11 +182,15 @@ int main(int argc, char *argv[])
 				if(r.size() == 1){
 					//std::cout << r[0].second << std::endl;
 
-					if(r[0].second > 25 || go_count > 15){
+					vr = -0.1 * (r[0].first.x - 320) / 320.0;
+
+					if(r[0].second > 25){
 						phase = ARRIVED;
 					}
 
 				}
+
+				if(go_count > 200)phase = ARRIVED;
 			}
 
 				break;
