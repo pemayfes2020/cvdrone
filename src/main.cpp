@@ -27,25 +27,25 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
+	// // Instructions
+	// std::cout << "***************************************" << std::endl;
+	// std::cout << "*       CV Drone sample program       *" << std::endl;
+	// std::cout << "* - Controls -                        *" << std::endl;
+	// std::cout << "*    'Space' -- Takeoff/Landing       *" << std::endl;
+	// std::cout << "*    'Up'    -- Move forward          *" << std::endl;
+	// std::cout << "*    'Down'  -- Move backward         *" << std::endl;
+	// std::cout << "*    'Left'  -- Turn left             *" << std::endl;
+	// std::cout << "*    'Right' -- Turn right            *" << std::endl;
+	// std::cout << "*    'Q'     -- Move upward           *" << std::endl;
+	// std::cout << "*    'A'     -- Move downward         *" << std::endl;
+	// std::cout << "*    'B'     -- auto-up-and-down      *" << std::endl;
+	// std::cout << "* - Others -                          *" << std::endl;
+	// std::cout << "*    'C'     -- Change camera         *" << std::endl;
+	// std::cout << "*    'Esc'   -- Exit                  *" << std::endl;
+	// std::cout << "***************************************" << std::endl;
 
-	// Instructions
-	std::cout << "***************************************" << std::endl;
-	std::cout << "*       CV Drone sample program       *" << std::endl;
-	std::cout << "* - Controls -                        *" << std::endl;
-	std::cout << "*    'Space' -- Takeoff/Landing       *" << std::endl;
-	std::cout << "*    'Up'    -- Move forward          *" << std::endl;
-	std::cout << "*    'Down'  -- Move backward         *" << std::endl;
-	std::cout << "*    'Left'  -- Turn left             *" << std::endl;
-	std::cout << "*    'Right' -- Turn right            *" << std::endl;
-	std::cout << "*    'Q'     -- Move upward           *" << std::endl;
-	std::cout << "*    'A'     -- Move downward         *" << std::endl;
-	std::cout << "*    'B'     -- auto-up-and-down      *" << std::endl;
-	std::cout << "* - Others -                          *" << std::endl;
-	std::cout << "*    'C'     -- Change camera         *" << std::endl;
-	std::cout << "*    'Esc'   -- Exit                  *" << std::endl;
-	std::cout << "***************************************" << std::endl;
 
-	// Battery
+	// // Battery
 	std::cout << "Battery = " << ardrone.getBatteryPercentage() << "[%]" << std::endl;
 
 
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 			case START:{//0
 				r = ardrone.detectCircle(image, target_x, target_y, target_z, LOW_HUE, UP_HUE);
 
-			    if(abs(pre_alt - ardrone.getAltitude()) < 0.05 && pre_alt){
+				if(abs(pre_alt - ardrone.getAltitude()) < 0.05 && pre_alt){
 					phase = FIND_OBJECT;//FIND_OBJECTへ
 				}
 				pre_alt = ardrone.getAltitude();
