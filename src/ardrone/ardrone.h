@@ -1076,7 +1076,7 @@ public:
 	virtual void resetPosition();
     virtual void mysetPosition(double x, double y, double z);
 
-    virtual void floorDetect(cv::Mat src, cv::Mat *image);
+    virtual void floorDetect(cv::Mat src);
 
     // Battery charge [%]
     virtual int getBatteryPercentage(void);
