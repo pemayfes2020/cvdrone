@@ -15,6 +15,7 @@ LIBS          = -lm                     \
 OBJS          = ../../src/ardrone/ardrone.o \
                 ../../src/ardrone/command.o \
                 ../../src/ardrone/config.o  \
+                ../../src/ardrone/floor.o   \
                 ../../src/ardrone/udp.o     \
                 ../../src/ardrone/tcp.o     \
                 ../../src/ardrone/navdata.o \

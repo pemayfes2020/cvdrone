@@ -369,7 +369,7 @@ struct ARDRONE_NAVDATA {
     unsigned int sequence;
     unsigned int vision_defined;
 
-	//ˆÊ’u‚ğ‹‚ß‚é—p
+	//ï¿½Ê’uï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½p
 	clock_t time_now, time_prev;
 	double pos_x, pos_y, pos_z;
 
@@ -1071,10 +1071,12 @@ public:
     virtual double getVelocity(double *vx = NULL, double *vy = NULL, double *vz = NULL); // Velocity [m/s]
     virtual int    getPosition(double *latitude = NULL, double *longitude = NULL, double *elevation = NULL); // GPS (only for AR.Drone 2.0)
 																											 
-	//ˆÊ’u‚ğ‹‚ß‚éŠÖ”
+	//ï¿½Ê’uï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½Öï¿½
 	virtual void mygetPosition(double *x, double *y, double *z);
 	virtual void resetPosition();
-        virtual void mysetPosition(double x, double y, double z);
+    virtual void mysetPosition(double x, double y, double z);
+
+    virtual void floorDetect(cv::Mat image, cv::Mat *result);
 
     // Battery charge [%]
     virtual int getBatteryPercentage(void);
