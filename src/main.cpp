@@ -42,13 +42,15 @@ int main(int argc, char *argv[])
 	std::cout << "* - Others -                          *" << std::endl;
 	std::cout << "*    'C'     -- Change camera         *" << std::endl;
 	std::cout << "*    'Esc'   -- Exit                  *" << std::endl;
+	std::cout << "*    'E'     -- Emergency				*" << std::endl;
 	std::cout << "*                                     *" << std::endl;
 	std::cout << "***************************************" << std::endl;
 
 	//�ڕW�n�_���i�[
 	double target_x, target_y, target_z;
         target_x = 0.0; target_y = 0.0; target_z = 0.4444;
-        int mycount = 0;
+
+	cv::namedWindow("camera", 1);
 	while (1) {
 		// Key input
 		int key = cv::waitKey(5);
@@ -56,6 +58,9 @@ int main(int argc, char *argv[])
 
 		// Get an image
 		cv::Mat image = ardrone.getImage();
+		// Display the image
+		cv::imshow("camera", image);
+
 		ardrone.floorDetect(image);
 
 		// Take off / Landing 
@@ -84,6 +89,7 @@ int main(int argc, char *argv[])
 			case 'w':	vz = 1.0; 					break;
 			case 's':	vz = -1.0; 					break;
 			case 'r':	ardrone.resetPosition(); 	break;
+			case 'e':   ardrone.emergency();		break;
 
 			default:
 					//ardrone.keepPosition(target_x, target_y, target_z, &vx, &vy, &vz);
@@ -101,8 +107,6 @@ int main(int argc, char *argv[])
 		static int mode = 0;
 		if (key == 'c') ardrone.setCamera(++mode % 4);
 
-		// Display the image
-		cv::imshow("camera", image);
 
 		if (ardrone.getBatteryPercentage() < 15) {
 			std::cout << "Battery low !" << std::endl;
@@ -112,6 +116,7 @@ int main(int argc, char *argv[])
 	}
 
 	// See you
+	cv::destroyAllWindows();
 	ardrone.close();
 
 	return 0;
