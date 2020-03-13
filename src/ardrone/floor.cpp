@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <bits/stdc++.h>
 
 void ARDrone::floorDetect(cv::Mat src){
     cv::Mat gray, inv, dst, cann;
@@ -21,7 +20,7 @@ void ARDrone::floorDetect(cv::Mat src){
     int threshold = 250;
     double minLineLength = 200;
     double maxLineGap = 500;
-    cv::HoughLinesP(inv, mylines, rho, theta, threshold, minLineLength, maxLineGap);
+    cv::HoughLinesP(cann, mylines, rho, theta, threshold, minLineLength, maxLineGap);
 /*
     std::vector<cv::Vec2f>::iterator it = mylines.begin();
     for(; it!=mylines.end(); ++it){
@@ -37,7 +36,7 @@ void ARDrone::floorDetect(cv::Mat src){
         cv::line(dst, pt1, pt2, cv::Scalar(0, 0, 255), 1, CV_AA);
     }
 */
-    std::cout << mylines.size() << std::endl;
+    //std::cout << mylines.size() << std::endl;
 
     for(size_t i = 0; i < mylines.size(); ++i){
         cv::Vec4i l = mylines[i];
@@ -47,7 +46,7 @@ void ARDrone::floorDetect(cv::Mat src){
         pt2.x = l[2];
         pt2.y = l[3];
         //std::cout << pt1 << pt2 << std::endl;
-        std::cout << src.cols<< src.rows << std::endl;
+        //std::cout << src.cols<< src.rows << std::endl;
         cv::line(dst, pt1, pt2, cv::Scalar(0, 0, 255), 1);
     }
 
